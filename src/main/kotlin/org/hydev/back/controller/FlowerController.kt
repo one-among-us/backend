@@ -4,12 +4,14 @@ import org.hydev.back.H
 import org.hydev.back.db.Flower
 import org.hydev.back.db.FlowerRepo
 import org.hydev.back.str
+import org.springframework.web.bind.annotation.CrossOrigin
 import org.springframework.web.bind.annotation.GetMapping
 import org.springframework.web.bind.annotation.RequestMapping
 import org.springframework.web.bind.annotation.RestController
 
 @RestController
 @RequestMapping("/flowers")
+@CrossOrigin(origins = ["*"])
 class FlowerController(
     private val flowerRepo: FlowerRepo
 )

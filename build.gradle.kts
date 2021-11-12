@@ -29,9 +29,8 @@ dependencies {
 	implementation("org.xerial:sqlite-jdbc:3.34.0")
 	implementation("com.github.gwenn:sqlite-dialect:0.1.1")
 
-	// Lombok
-	compileOnly("org.projectlombok:lombok")
-	annotationProcessor("org.projectlombok:lombok")
+	// https://mvnrepository.com/artifact/org.kohsuke/github-api
+	implementation("org.kohsuke:github-api:1.135")
 }
 
 tasks.withType<KotlinCompile> {

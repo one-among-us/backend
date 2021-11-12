@@ -2,7 +2,8 @@ package org.hydev
 
 import io.ktor.server.engine.*
 import io.ktor.server.netty.*
-import org.hydev.plugins.*
+import org.hydev.plugins.configureRouting
+import org.hydev.plugins.configureSerialization
 
 fun main()
 {

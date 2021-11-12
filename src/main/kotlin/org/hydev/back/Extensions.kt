@@ -1,9 +1,9 @@
 package org.hydev.back
 
 import org.springframework.http.ResponseEntity
-import org.springframework.web.bind.annotation.RequestHeader
+import org.springframework.web.bind.annotation.RequestParam
 
-typealias H = RequestHeader
+typealias H = RequestParam
 
 // Python aliases
 typealias str = String

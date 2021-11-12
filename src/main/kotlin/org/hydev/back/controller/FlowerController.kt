@@ -19,13 +19,17 @@ class FlowerController(
     @GetMapping("/get")
     fun get(@H id: str): Any
     {
-        val flower = flowerRepo.queryByPersonId(id) ?: return "None"
+        val id = id.lowercase()
+
+        val flower = flowerRepo.queryByPersonId(id) ?: return "0"
         return flower.flowers
     }
 
     @GetMapping("/give")
     fun give(@H id: str): Any
     {
+        val id = id.lowercase()
+
         var flower = flowerRepo.queryByPersonId(id)
         if (flower == null)
         {

@@ -1,4 +1,4 @@
-package org.hydev.plugins
+package org.hydev
 
 import io.ktor.application.*
 import io.ktor.features.*

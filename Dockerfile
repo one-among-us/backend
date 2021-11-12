@@ -9,5 +9,6 @@ FROM openjdk:11
 
 RUN mkdir /app
 COPY --from=build /home/gradle/src/build/libs/*.jar /app/app.jar
+COPY --from=build /home/gradle/src/build/dependencies/*.jar /app/libs/
 
-ENTRYPOINT ["java", "-Djava.security.egd=file:/dev/./urandom", "-jar", "/app/app.jar"]
+ENTRYPOINT ["java", "-Djava.security.egd=file:/dev/./urandom", "-cp", "/app/app.jar:/app/libs/*", "org.hydev.ApplicationKt"]

@@ -32,3 +32,11 @@ compileTestKotlin {
         jvmTarget = "11"
     }
 }
+
+jar {
+    manifest {
+        attributes(
+            'Main-Class': 'org.hydev.ApplicationKt'
+        )
+    }
+}

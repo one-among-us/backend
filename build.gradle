@@ -45,3 +45,5 @@ task copyDependencies(type: Copy) {
     from configurations.default
     into 'build/dependencies'
 }
+
+build.finalizedBy(copyDependencies)

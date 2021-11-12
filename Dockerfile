@@ -8,6 +8,7 @@ RUN gradle build --no-daemon
 FROM openjdk:11
 
 RUN mkdir /app
+RUN mkdir /app/libs
 COPY --from=build /home/gradle/src/build/libs/*.jar /app/app.jar
 COPY --from=build /home/gradle/src/build/dependencies/*.jar /app/libs/
 

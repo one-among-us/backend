@@ -1,4 +1,4 @@
-package org.hydev.OneAmongUs.Backend
+package org.hydev.back
 
 import org.springframework.boot.autoconfigure.SpringBootApplication
 import org.springframework.boot.runApplication

@@ -1,4 +1,4 @@
-package org.hydev.OneAmongUs.Backend
+package org.hydev
 
 import org.junit.jupiter.api.Test
 import org.springframework.boot.test.context.SpringBootTest

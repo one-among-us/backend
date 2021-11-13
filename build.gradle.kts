@@ -17,17 +17,17 @@ repositories {
 }
 
 dependencies {
-	implementation("org.springframework.boot:spring-boot-starter")
-	implementation("org.springframework.boot:spring-boot-starter-web")
+	implementation("org.springframework.boot:spring-boot-starter:2.5.6")
+	implementation("org.springframework.boot:spring-boot-starter-web:2.5.6")
 	implementation("org.jetbrains.kotlin:kotlin-reflect")
 	implementation("org.jetbrains.kotlin:kotlin-stdlib-jdk8")
 	implementation("org.springframework.boot:spring-boot-starter-web")
-	testImplementation("org.springframework.boot:spring-boot-starter-test")
+	testImplementation("org.springframework.boot:spring-boot-starter-test:2.5.6")
 
 	// https://my.oschina.net/mingyuelab/blog/3190313
-	implementation("org.springframework.boot:spring-boot-starter-data-jpa")
-	implementation("org.xerial:sqlite-jdbc:3.34.0")
-	implementation("com.github.gwenn:sqlite-dialect:0.1.1")
+	implementation("org.springframework.boot:spring-boot-starter-data-jpa:2.5.6")
+	implementation("org.xerial:sqlite-jdbc:3.36.0.2")
+	implementation("com.github.gwenn:sqlite-dialect:0.1.2")
 
 	// https://mvnrepository.com/artifact/org.kohsuke/github-api
 	implementation("org.kohsuke:github-api:1.135")

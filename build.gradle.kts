@@ -31,6 +31,9 @@ dependencies {
 
 	// https://mvnrepository.com/artifact/org.kohsuke/github-api
 	implementation("org.kohsuke:github-api:1.135")
+	// https://mvnrepository.com/artifact/org.eclipse.jgit/org.eclipse.jgit
+	implementation("org.eclipse.jgit:org.eclipse.jgit:5.13.0.202109080827-r")
+
 }
 
 tasks.withType<KotlinCompile> {

@@ -11,7 +11,15 @@ data class DataEdit(
     val content: str
 )
 
-fun createPullRequest(editor: str, editorEmail: str, edits: list<DataEdit>)
+/**
+ * Create pull request
+ *
+ * @param editor String
+ * @param editorEmail String
+ * @param edits ArrayList<DataEdit>
+ * @return Pull request url
+ */
+fun createPullRequest(editor: str, editorEmail: str, edits: list<DataEdit>): str
 {
     val token = System.getenv("github-token")
     val repo = System.getenv("github-repo")
@@ -53,13 +61,14 @@ fun createPullRequest(editor: str, editorEmail: str, edits: list<DataEdit>)
     val ghRepo = github.getRepository(repo)
     val result = ghRepo.createPullRequest("[PR] User $editor suggested ${edits.size} edits",
         "${repo.split("/")[0]}:$branch", "main", "", true)
-    println(result)
 
     git.close()
 
     // Delete local folder
     dir.deleteRecursively()
     dir.delete()
+
+    return "https://github.com/$repo/pull/${result.number}"
 }
 
 fun main(args: Array<String>)

@@ -21,6 +21,8 @@ data class DataEdit(
  */
 fun createPullRequest(editor: str, editorEmail: str, edits: list<DataEdit>): str
 {
+    val editor = editor.replace(" ", "-").lowercase()
+
     val token = System.getenv("github-token")
     val repo = System.getenv("github-repo")
     val auth = UsernamePasswordCredentialsProvider(token, "")

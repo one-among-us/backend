@@ -1,11 +1,15 @@
 package org.hydev.back
 
 import org.springframework.http.ResponseEntity
+import org.springframework.web.bind.annotation.RequestBody
+import org.springframework.web.bind.annotation.RequestHeader
 import org.springframework.web.bind.annotation.RequestParam
 import java.text.SimpleDateFormat
 import java.util.*
 
-typealias H = RequestParam
+typealias P = RequestParam
+typealias B = RequestBody
+typealias H = RequestHeader
 
 // Python aliases
 typealias str = String

@@ -1,6 +1,6 @@
 package org.hydev.back.controller
 
-import org.hydev.back.H
+import org.hydev.back.P
 import org.hydev.back.db.Flower
 import org.hydev.back.db.FlowerRepo
 import org.hydev.back.str
@@ -17,7 +17,7 @@ class FlowerController(
 )
 {
     @GetMapping("/get")
-    fun get(@H id: str): Any
+    fun get(@P id: str): Any
     {
         val id = id.lowercase()
 
@@ -26,7 +26,7 @@ class FlowerController(
     }
 
     @GetMapping("/give")
-    fun give(@H id: str): Any
+    fun give(@P id: str): Any
     {
         val id = id.lowercase()
 

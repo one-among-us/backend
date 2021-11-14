@@ -12,5 +12,6 @@ RUN mkdir /app
 RUN mkdir /app/libs
 COPY --from=build /home/gradle/src/build/libs/*.jar /app/app.jar
 
+WORKDIR /app
 EXPOSE 43482
 ENTRYPOINT ["java", "-Djava.security.egd=file:/dev/./urandom", "-jar", "/app/app.jar"]

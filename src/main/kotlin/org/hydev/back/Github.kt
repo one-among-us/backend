@@ -11,6 +11,37 @@ data class DataEdit(
     val content: str
 )
 
+data class Secrets(
+    val githubToken: str,
+    val githubRepo: str
+)
+
+fun getSecretFromEnv(): Secrets?
+{
+    if (System.getenv("github-token") == null) return null
+    return Secrets(System.getenv("github-token"), System.getenv("github-repo"))
+}
+
+fun getSecretsFromFile(): Secrets?
+{
+    val file = File("./secrets.txt")
+    if (!file.exists() || !file.isFile) return null
+    val text = file.readText()
+    val lines = text.replace("\r\n", "\n").split("\n")
+    return Secrets(lines[0], lines[1])
+}
+
+fun getSecrets(): Secrets
+{
+    val secrets = getSecretsFromFile() ?: getSecretFromEnv()
+    if (secrets == null)
+    {
+        val dir = File("./secrets.txt").absolutePath
+        throw RuntimeException("No secrets defined in $dir or in environment variables")
+    }
+    return secrets
+}
+
 /**
  * Create pull request
  *
@@ -23,8 +54,9 @@ fun createPullRequest(editor: str, editorEmail: str, edits: list<DataEdit>): str
 {
     val editor = editor.replace(" ", "-").lowercase()
 
-    val token = System.getenv("github-token")
-    val repo = System.getenv("github-repo")
+    val secrets = getSecrets()
+    val token = secrets.githubToken
+    val repo = secrets.githubRepo
     val auth = UsernamePasswordCredentialsProvider(token, "")
     val date = date("yyyy-MM-dd-HH-mm-ss")
     val branch = "edit-by-${editor}-${date}"

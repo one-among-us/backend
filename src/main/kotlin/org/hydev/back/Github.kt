@@ -54,7 +54,6 @@ fun createPullRequest(editor: str, editorEmail: str, edits: list<DataEdit>): str
 {
     val editor = editor.replace(" ", "-").lowercase()
 
-    val secrets = getSecrets()
     val token = secrets.githubToken
     val repo = secrets.githubRepo
     val auth = UsernamePasswordCredentialsProvider(token, "")

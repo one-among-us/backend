@@ -24,7 +24,7 @@ fun getSecretFromEnv(): Secrets?
 
 fun getSecretsFromFile(): Secrets?
 {
-    val file = File("./secrets.txt")
+    val file = File("./secrets/github.txt")
     if (!file.exists() || !file.isFile) return null
     val text = file.readText()
     val lines = text.replace("\r\n", "\n").split("\n")
@@ -36,7 +36,7 @@ fun getSecrets(): Secrets
     val secrets = getSecretsFromFile() ?: getSecretFromEnv()
     if (secrets == null)
     {
-        val dir = File("./secrets.txt").absolutePath
+        val dir = File("./secrets/github.txt").absolutePath
         throw RuntimeException("No secrets defined in $dir or in environment variables")
     }
     return secrets

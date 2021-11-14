@@ -72,8 +72,3 @@ fun createPullRequest(editor: str, editorEmail: str, edits: list<DataEdit>): str
 
     return "https://github.com/$repo/pull/${result.number}"
 }
-
-fun main(args: Array<String>)
-{
-    createPullRequest("testuser", "test@example.com", arrayListOf(DataEdit("test.txt", "Hellowo")))
-}

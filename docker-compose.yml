@@ -2,4 +2,4 @@ version: "2"
 services:
   one-among-us-back:
     build: .
-    image: one-among-us-back:latest
+    image: hykilpikonna/one-among-us-back:latest

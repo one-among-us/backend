@@ -15,6 +15,7 @@ typealias H = RequestHeader
 typealias str = String
 typealias int = Long
 typealias list<T> = ArrayList<T>
+typealias bool = Boolean
 
 
 fun <T> T.http(code: Int): ResponseEntity<T> = ResponseEntity.status(code).body<T>(this)

@@ -28,3 +28,14 @@ fun date(f: str = "yyyy-MM-dd"): str = SimpleDateFormat(f).format(Date())
  * @return String Decoded string
  */
 fun str.dec(): String = URLDecoder.decode(this, "UTF-8")
+
+// https://www.baeldung.com/java-email-validation-regex
+val emailRegex = "^(?=.{1,64}@)[\\p{L}0-9_-]+(\\.[\\p{L}0-9_-]+)*@[^-][\\p{L}0-9-]+(\\.[\\p{L}0-9-]+)*(\\.[\\p{L}]{2,})$".toRegex()
+
+/**
+ * Check if the string is a valid email
+ *
+ * @receiver str
+ * @return bool
+ */
+fun str.isValidEmail(): bool = emailRegex.matches(this)

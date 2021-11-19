@@ -16,7 +16,7 @@ class EditController
     {
         // Verify captcha
         if (!verifyCaptcha(secrets.recaptchaSecret, captcha.dec()))
-            return "Error: Captcha Failed.".http(400)
+            return "没有查到验证码".http(400)
 
         // TODO: Check if id exists
         val id = id.dec().lowercase()

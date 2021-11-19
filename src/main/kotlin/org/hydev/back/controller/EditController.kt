@@ -15,11 +15,12 @@ class EditController
     fun get(@H id: str, @H content: str, @H captcha: str): Any
     {
         // Verify captcha
-        if (!verifyCaptcha(secrets.recaptchaSecret, captcha.dec())) return "Error: Captcha Failed."
+        if (!verifyCaptcha(secrets.recaptchaSecret, captcha.dec()))
+            return "Error: Captcha Failed.".http(400)
 
         // TODO: Check if id exists
         val id = id.dec().lowercase()
-        
+
         return try
         {
             createPullRequest("Web User", "web@example.com",

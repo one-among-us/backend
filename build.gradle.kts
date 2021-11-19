@@ -35,6 +35,10 @@ dependencies {
 	implementation("org.eclipse.jgit:org.eclipse.jgit:5.13.0.202109080827-r")
 	// https://mvnrepository.com/artifact/org.mariadb.jdbc/mariadb-java-client
 	implementation("org.mariadb.jdbc:mariadb-java-client:2.7.4")
+
+	// https://mvnrepository.com/artifact/com.github.kittinunf.fuel/fuel
+	implementation("com.github.kittinunf.fuel:fuel:2.3.1")
+	implementation("com.github.kittinunf.fuel:fuel-jackson:2.3.1")
 }
 
 tasks.withType<KotlinCompile> {

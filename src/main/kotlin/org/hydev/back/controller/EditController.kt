@@ -26,6 +26,8 @@ class EditController
         val id = id.dec().lowercase()
         var name = name.ifBlank { "Anonymous" }
         name += " ${request.remoteAddr}"
+        val email = if (email.isBlank() || !email.isValidEmail())
+            "anonymous@example.com" else email
 
         return try
         {

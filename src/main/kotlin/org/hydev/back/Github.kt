@@ -11,37 +11,6 @@ data class DataEdit(
     val content: str
 )
 
-data class Secrets(
-    val githubToken: str,
-    val githubRepo: str
-)
-
-fun getSecretFromEnv(): Secrets?
-{
-    if (System.getenv("github-token") == null) return null
-    return Secrets(System.getenv("github-token"), System.getenv("github-repo"))
-}
-
-fun getSecretsFromFile(): Secrets?
-{
-    val file = File("./secrets/github.txt")
-    if (!file.exists() || !file.isFile) return null
-    val text = file.readText()
-    val lines = text.replace("\r\n", "\n").split("\n")
-    return Secrets(lines[0], lines[1])
-}
-
-fun getSecrets(): Secrets
-{
-    val secrets = getSecretsFromFile() ?: getSecretFromEnv()
-    if (secrets == null)
-    {
-        val dir = File("./secrets/github.txt").absolutePath
-        throw RuntimeException("No secrets defined in $dir or in environment variables")
-    }
-    return secrets
-}
-
 /**
  * Create pull request
  *

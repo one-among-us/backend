@@ -2,7 +2,7 @@
 ## Deploy
 
 1. Create a mysql server.
-2. Create file `./secrets/github.txt`  
+2. Create file `./secrets/secrets.txt`  
    The first line is a github token of someone with access to the repo.  
    The second line is the name of the repo (E.g. hykilpikonna/our-data).  
    The third line is the RecaptchaV2 server secret.

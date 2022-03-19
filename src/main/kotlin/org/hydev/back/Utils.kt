@@ -2,6 +2,7 @@ package org.hydev.back
 
 import com.github.kittinunf.fuel.httpGet
 import com.github.kittinunf.fuel.jackson.responseObject
+import com.google.gson.Gson
 import java.io.File
 import java.lang.System.getenv
 
@@ -28,31 +29,18 @@ fun verifyCaptcha(secret: str, response: str?): bool
 data class Secrets(
     val githubToken: str,
     val githubRepo: str,
-    val recaptchaSecret: str
+    val recaptchaSecret: str,
+    val telegramBotToken: str,
+    val telegramChatID: int
 )
-
-fun getSecretFromEnv(): Secrets?
-{
-    if (getenv("github-token") == null) return null
-    return Secrets(getenv("github-token"), getenv("github-repo"), getenv("recaptcha-secret"))
-}
-
-fun getSecretsFromFile(): Secrets?
-{
-    val file = File("./secrets/secrets.txt")
-    if (!file.exists() || !file.isFile) return null
-    val text = file.readText()
-    val lines = text.replace("\r\n", "\n").split("\n")
-    return Secrets(lines[0], lines[1], lines[2])
-}
 
 fun getSecrets(): Secrets
 {
-    val secrets = getSecretsFromFile() ?: getSecretFromEnv()
-    if (secrets == null)
+    val file = File("./secrets/secrets.json")
+    if (!file.exists() || !file.isFile)
     {
-        val dir = File("./secrets/github.txt").absolutePath
-        throw RuntimeException("No secrets defined in $dir or in environment variables")
+        val dir = File("./secrets/secrets.json").absolutePath
+        throw RuntimeException("No secrets defined in $dir")
     }
-    return secrets
+    return Gson().fromJson(file.readText(), Secrets::class.java)
 }

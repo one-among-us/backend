@@ -24,8 +24,7 @@ class EditController
 
         // TODO: Check if id exists
         val id = id.dec().lowercase()
-        var name = name.ifBlank { "Anonymous" }
-        name += " ${request.remoteAddr}"
+        val name = name.ifBlank { "Anonymous" } + " ${request.remoteAddr}"
         val email = if (email.isBlank() || !email.isValidEmail())
             "anonymous@example.com" else email
 

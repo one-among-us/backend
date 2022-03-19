@@ -23,15 +23,16 @@ class EditController
             return "没有查到验证码".http(400)
 
         // TODO: Check if id exists
+        val content = content.dec()
         val id = id.dec().lowercase()
-        val name = name.ifBlank { "Anonymous" } + " ${request.remoteAddr}"
+        val name = name.dec().ifBlank { "Anonymous" } + " ${request.remoteAddr}"
         val email = if (email.isBlank() || !email.isValidEmail())
             "anonymous@example.com" else email
 
         return try
         {
             createPullRequest(name, email,
-                arrayListOf(DataEdit("people/$id/info.json5", content.dec())))
+                arrayListOf(DataEdit("people/$id/info.json5", content)))
         }
         catch (e: Exception) { "创建更改请求失败（${e.message}）".http(500) }
     }

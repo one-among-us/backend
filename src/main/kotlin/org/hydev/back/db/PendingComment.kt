@@ -15,7 +15,8 @@ data class PendingComment(
     var personId: str = "",
     var content: str = "",
     var submitter: str = "",
-    var email: str = ""
+    var email: str = "",
+    var approved: bool = false
 )
 {
     override fun equals(other: Any?): Boolean

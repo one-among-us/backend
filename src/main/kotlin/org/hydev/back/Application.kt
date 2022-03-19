@@ -14,5 +14,6 @@ lateinit var bot: Bot
 
 fun main(args: Array<String>) {
 	bot = bot { token = secrets.telegramBotToken }
+	bot.sendMessage(ChatId.fromId(secrets.telegramChatID), "Server Started.")
 	runApplication<Application>(*args)
 }

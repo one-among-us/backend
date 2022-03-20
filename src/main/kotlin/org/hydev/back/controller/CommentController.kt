@@ -43,8 +43,8 @@ class CommentController(private val commentRepo: PendingCommentRepo)
 
         // TODO: Check if id exists
         val content = content.dec()
-        val id = id.dec().lowercase()
-        val name = name.dec().ifBlank { "Anonymous" } + " ${request.remoteAddr}"
+        val id = id.dec()
+        val name = name.dec().ifBlank { "Anonymous" }
         val email = if (email.isBlank() || !email.isValidEmail())
             "anonymous@example.com" else email
 
@@ -53,12 +53,12 @@ class CommentController(private val commentRepo: PendingCommentRepo)
 
         // Send message on telegram
         bot.sendMessage(ChatId.fromId(secrets.telegramChatID), """
-            $id 收到了新的留言：
+            #${comment.id} - $id 收到了新的留言：
             
             $content
             
-            - 留言 ID: ${comment.id}
-            - 姓名/IP: $name
+            - IP: ${request.remoteAddr}
+            - 姓名: $name
             - 邮箱: $email
         """.trimIndent(), replyMarkup = replyMarkup)
 

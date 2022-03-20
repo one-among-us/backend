@@ -35,5 +35,6 @@ data class PendingComment(
 @Repository
 interface PendingCommentRepo: JpaRepository<PendingComment, int>
 {
+    fun queryById(id: int): PendingComment?
     fun queryByPersonId(personId: str): PendingComment?
 }

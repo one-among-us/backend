@@ -77,43 +77,21 @@ fun createPullRequest(editor: str, editorEmail: str, edits: list<DataEdit>): str
  *
  * @param editor String
  * @param editorEmail String
- * @param edits ArrayList<DataEdit>
+ * @param edit One edit
  * @param message Commit message
  * @return Commit URL
  */
-fun commitDirectly(editor: str, editorEmail: str, edits: list<DataEdit>, message: str? = null): str
+fun commitDirectly(editor: str, edit: DataEdit, message: str? = null): str
 {
     val editor = editor.replace(" ", "-").lowercase()
 
     val token = secrets.githubToken
     val repo = secrets.githubRepo
-    val date = date("yyyy-MM-dd-HH-mm-ss")
 
-    // Clone repo
-    val dir = File("./temp/github-repo-${editor}-${date}")
-    val git = Git.cloneRepository()
-        .setURI("https://${token}@github.com/$repo")
-        .setDirectory(dir)
-        .setCredentialsProvider(auth)
-        .call()
+    val github = GitHubBuilder().withOAuthToken(token).build()
+    val ghRepo = github.getRepository(repo)
+    val commit = ghRepo.createContent().path(edit.filePath).content(edit.content)
+        .message(message ?: "User $editor pushed an edit").commit()
 
-    // Change files
-    for (edit in edits) File(dir, edit.filePath).writeText(edit.content)
-
-    // Git commit
-    git.add().addFilepattern(".").call()
-    git.commit().setAuthor(editor, editorEmail).setCommitter(editor, editorEmail)
-        .setMessage(message ?: "User $editor pushed ${edits.size} edits")
-        .call()
-
-    // Git push
-    git.push().setCredentialsProvider(auth).call()
-    val commitHash = git.repository.refDatabase.findRef("HEAD").objectId.name
-    git.close()
-
-    // Delete local folder
-    dir.deleteRecursively()
-    dir.delete()
-
-    return "https://github.com/$repo/commit/${commitHash}"
+    return commit.commit!!.url.toString()
 }

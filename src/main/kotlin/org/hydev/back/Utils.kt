@@ -5,6 +5,7 @@ import com.github.kittinunf.fuel.jackson.responseObject
 import com.google.gson.Gson
 import java.io.File
 import java.lang.System.getenv
+import javax.servlet.http.HttpServletRequest
 
 data class CaptchaResponse(val success: bool)
 
@@ -44,3 +45,6 @@ fun getSecrets(): Secrets
     }
     return Gson().fromJson(file.readText(), Secrets::class.java)
 }
+
+fun HttpServletRequest.getIP(): str = getHeader("CF-Connecting-IP") ?: getHeader("X-Forwarded-For") ?:
+    getHeader("X-Real-IP") ?: remoteAddr

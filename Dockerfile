@@ -3,7 +3,7 @@
 FROM gradle:7.2-jdk11-alpine AS build
 COPY --chown=gradle:gradle . /home/gradle/src
 WORKDIR /home/gradle/src
-RUN gradle build --no-daemon
+RUN gradle build
 RUN rm /home/gradle/src/build/libs/*-plain.jar
 
 FROM adoptopenjdk/openjdk11-openj9:jre-11.0.13_8_openj9-0.29.0-alpine

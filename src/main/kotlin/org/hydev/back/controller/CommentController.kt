@@ -57,7 +57,7 @@ class CommentController(private val commentRepo: PendingCommentRepo)
             
             $content
             
-            - IP: ${request.remoteAddr}
+            - IP: ${request.getIP()}
             - 姓名: $name
             - 邮箱: $email
         """.trimIndent(), replyMarkup = replyMarkup)

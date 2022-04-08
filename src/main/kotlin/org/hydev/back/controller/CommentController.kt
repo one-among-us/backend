@@ -7,6 +7,7 @@ import com.github.kotlintelegrambot.entities.ChatId
 import com.github.kotlintelegrambot.entities.InlineKeyboardMarkup
 import com.github.kotlintelegrambot.entities.keyboard.InlineKeyboardButton
 import com.github.kotlintelegrambot.network.fold
+import com.google.gson.Gson
 import org.hydev.back.*
 import org.hydev.back.db.PendingComment
 import org.hydev.back.db.PendingCommentRepo
@@ -15,6 +16,8 @@ import org.springframework.web.bind.annotation.PostMapping
 import org.springframework.web.bind.annotation.RequestMapping
 import org.springframework.web.bind.annotation.RestController
 import javax.servlet.http.HttpServletRequest
+
+
 
 @RestController
 @RequestMapping("/comment")
@@ -55,8 +58,8 @@ class CommentController(private val commentRepo: PendingCommentRepo)
         val comment = commentRepo.queryById(id)!!
         val fPath = "people/${comment.personId}/comments/${date("yyyy-MM-dd")}-C${comment.id}.json"
         val cMsg = "[+] Comment added by ${comment.submitter} for ${comment.personId}"
-        val content =
-        val url = commitDirectly(comment.submitter, DataEdit(fPath, comment.content), cMsg)
+        val content = hashMapOf("id" to comment.id, "content" to comment.content, "submitter" to comment.submitter)
+        val url = commitDirectly(comment.submitter, DataEdit(fPath, Gson().toJson(content)), cMsg)
         bot.deleteMessage(chatId, statusMsgId)
 
         // Update database

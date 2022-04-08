@@ -56,9 +56,14 @@ class CommentController(private val commentRepo: PendingCommentRepo)
         var statusMsgId = 0L
         bot.sendMessage(chatId, "正在提交更改...").fold({ statusMsgId = it!!.result!!.messageId })
         val comment = commentRepo.queryById(id)!!
+
+        // Create commit content
         val fPath = "people/${comment.personId}/comments/${date("yyyy-MM-dd")}-C${comment.id}.json"
         val cMsg = "[+] Comment added by ${comment.submitter} for ${comment.personId}"
-        val content = hashMapOf("id" to comment.id, "content" to comment.content, "submitter" to comment.submitter)
+        val content = hashMapOf("id" to comment.id, "content" to comment.content,
+            "submitter" to comment.submitter, "date" to comment.date)
+
+        // Write commit
         val url = commitDirectly(comment.submitter, DataEdit(fPath, Gson().toJson(content)), cMsg)
         bot.deleteMessage(chatId, statusMsgId)
 

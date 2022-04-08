@@ -1,9 +1,12 @@
 package org.hydev.back.db
 
 import org.hibernate.Hibernate
-import org.hydev.back.*
+import org.hydev.back.bool
+import org.hydev.back.int
+import org.hydev.back.str
 import org.springframework.data.jpa.repository.JpaRepository
 import org.springframework.stereotype.Repository
+import java.sql.Date
 import javax.persistence.Entity
 import javax.persistence.GeneratedValue
 import javax.persistence.Id
@@ -16,6 +19,7 @@ data class PendingComment(
     var content: str = "",
     var submitter: str = "",
     var email: str = "",
+    var date: Date = Date(0),
     var approved: bool = false
 )
 {

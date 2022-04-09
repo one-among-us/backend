@@ -15,6 +15,7 @@ import org.springframework.web.bind.annotation.CrossOrigin
 import org.springframework.web.bind.annotation.PostMapping
 import org.springframework.web.bind.annotation.RequestMapping
 import org.springframework.web.bind.annotation.RestController
+import java.sql.Date
 import javax.servlet.http.HttpServletRequest
 
 
@@ -45,7 +46,7 @@ class CommentController(private val commentRepo: PendingCommentRepo)
 
         bot.editMessageReplyMarkup(chatId, msgId, inlId, null)
 
-        // Not pass, remove
+        // Rejected, remove
         if (!pass)
         {
             bot.editMessageText(chatId, msgId, inlId, "$message\n- 已删除❌")
@@ -60,8 +61,9 @@ class CommentController(private val commentRepo: PendingCommentRepo)
         // Create commit content
         val fPath = "people/${comment.personId}/comments/${date("yyyy-MM-dd")}-C${comment.id}.json"
         val cMsg = "[+] Comment added by ${comment.submitter} for ${comment.personId}"
-        val content = hashMapOf("id" to comment.id, "content" to comment.content,
+        val content = json("id" to comment.id, "content" to comment.content,
             "submitter" to comment.submitter, "date" to comment.date)
+        println("Adding Comment ${content}")
 
         // Write commit
         val url = commitDirectly(comment.submitter, DataEdit(fPath, Gson().toJson(content)), cMsg)
@@ -98,7 +100,7 @@ class CommentController(private val commentRepo: PendingCommentRepo)
             "anonymous@example.com" else email
 
         // Add to database
-        val comment = commentRepo.save(PendingComment(0, id, content, name, email))
+        val comment = commentRepo.save(PendingComment(0, id, content, name, email, Date(java.util.Date().time)))
 
         // Send message on telegram
         bot.sendMessage(ChatId.fromId(secrets.telegramChatID), """

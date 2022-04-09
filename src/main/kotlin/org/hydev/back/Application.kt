@@ -27,9 +27,9 @@ class PostConstruct(private val commentController: CommentController)
 	{
 		// Create bot
 		bot = bot {
+			logLevel = LogLevel.Error
 			token = secrets.telegramBotToken
 			dispatch {
-				logLevel = LogLevel.Error
 				command("start") { bot.sendMessage(ChatId.fromId(message.chat.id), "🐱") }
 				callbackQuery("comment-pass", commentController.commentCallback)
 				callbackQuery("comment-reject", commentController.commentCallback)

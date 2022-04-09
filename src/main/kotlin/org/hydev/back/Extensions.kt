@@ -1,5 +1,6 @@
 package org.hydev.back
 
+import com.google.gson.Gson
 import org.springframework.http.ResponseEntity
 import org.springframework.web.bind.annotation.RequestBody
 import org.springframework.web.bind.annotation.RequestHeader
@@ -17,8 +18,11 @@ typealias int = Long
 typealias list<T> = ArrayList<T>
 typealias bool = Boolean
 
+val gson = Gson()
+
 fun <T> T.http(code: Int): ResponseEntity<T> = ResponseEntity.status(code).body<T>(this)
 fun date(f: str = "yyyy-MM-dd"): str = SimpleDateFormat(f).format(Date())
+fun <K, V> json(vararg pairs: Pair<K, V>): str = gson.toJson(mapOf(*pairs))
 
 // https://www.baeldung.com/java-email-validation-regex
 val emailRegex = "^(?=.{1,64}@)[\\p{L}0-9_-]+(\\.[\\p{L}0-9_-]+)*@[^-][\\p{L}0-9-]+(\\.[\\p{L}0-9-]+)*(\\.[\\p{L}]{2,})$".toRegex()

@@ -1,10 +1,10 @@
 import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 
 plugins {
-	id("org.springframework.boot") version "2.5.6"
-	id("io.spring.dependency-management") version "1.0.11.RELEASE"
-	kotlin("jvm") version "1.5.31"
-	kotlin("plugin.spring") version "1.5.31"
+	id("org.springframework.boot")
+	id("io.spring.dependency-management")
+	kotlin("jvm")
+	kotlin("plugin.spring")
 	java
 }
 
@@ -18,33 +18,33 @@ repositories {
 }
 
 dependencies {
-	implementation("org.springframework.boot:spring-boot-starter:2.5.6")
-	implementation("org.springframework.boot:spring-boot-starter-web:2.5.6")
+	implementation("org.springframework.boot:spring-boot-starter:_")
+	implementation("org.springframework.boot:spring-boot-starter-web:_")
 	implementation("org.jetbrains.kotlin:kotlin-reflect")
 	implementation("org.jetbrains.kotlin:kotlin-stdlib-jdk8")
 	implementation("org.springframework.boot:spring-boot-starter-web")
-	testImplementation("org.springframework.boot:spring-boot-starter-test:2.5.6")
+	testImplementation(Spring.boot.test)
 
 	// Database
 	// https://my.oschina.net/mingyuelab/blog/3190313
-	implementation("org.springframework.boot:spring-boot-starter-data-jpa:2.5.6")
-	implementation("org.xerial:sqlite-jdbc:3.36.0.2")
-	implementation("com.github.gwenn:sqlite-dialect:0.1.2")
+	implementation(Spring.boot.data.jpa)
+	implementation("org.xerial:sqlite-jdbc:_")
+	implementation("com.github.gwenn:sqlite-dialect:_")
 	// https://mvnrepository.com/artifact/org.mariadb.jdbc/mariadb-java-client
-	implementation("org.mariadb.jdbc:mariadb-java-client:2.7.4")
+	implementation("org.mariadb.jdbc:mariadb-java-client:_")
 
 	// Github Client
 	// https://mvnrepository.com/artifact/org.kohsuke/github-api
-	implementation("org.kohsuke:github-api:1.135")
+	implementation("org.kohsuke:github-api:_")
 	// https://mvnrepository.com/artifact/org.eclipse.jgit/org.eclipse.jgit
-	implementation("org.eclipse.jgit:org.eclipse.jgit:5.13.0.202109080827-r")
+	implementation("org.eclipse.jgit:org.eclipse.jgit:_")
 
 	// https://mvnrepository.com/artifact/com.github.kittinunf.fuel/fuel
-	implementation("com.github.kittinunf.fuel:fuel:2.3.1")
-	implementation("com.github.kittinunf.fuel:fuel-jackson:2.3.1")
+	implementation("com.github.kittinunf.fuel:fuel:_")
+	implementation("com.github.kittinunf.fuel:fuel-jackson:_")
 
 	// Kotlin Telegram Bot
-	implementation("io.github.kotlin-telegram-bot.kotlin-telegram-bot:telegram:6.0.6")
+	implementation("io.github.kotlin-telegram-bot.kotlin-telegram-bot:telegram:_")
 }
 
 tasks.withType<KotlinCompile> {

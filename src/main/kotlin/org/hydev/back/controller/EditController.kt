@@ -15,17 +15,15 @@ import javax.servlet.http.HttpServletRequest
 class EditController
 {
     @PostMapping("/info")
-    fun get(@H id: str, @H content: str, @H captcha: str, @H name: str, @H email: str,
+    fun get(@P id: str, @P content: str, @P captcha: str, @P name: str, @P email: str,
             request: HttpServletRequest): Any
     {
         // Verify captcha
-        if (!verifyCaptcha(secrets.recaptchaSecret, captcha.dec()))
+        if (!verifyCaptcha(secrets.recaptchaSecret, captcha))
             return "没有查到验证码".http(400)
 
         // TODO: Check if id exists
-        val content = content.dec()
-        val id = id.dec().lowercase()
-        val name = name.dec().ifBlank { "Anonymous" } + " ${request.remoteAddr}"
+        val name = name.ifBlank { "Anonymous" } + " ${request.remoteAddr}"
         val email = if (email.isBlank() || !email.isValidEmail())
             "anonymous@example.com" else email
 

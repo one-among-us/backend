@@ -84,7 +84,7 @@ class CommentController(private val commentRepo: PendingCommentRepo)
 
     @PostMapping("/add")
     fun addComment(
-        @H id: str, @H content: str, @H captcha: str, @H name: str, @H email: str,
+        @P id: str, @P content: str, @P captcha: str, @P name: str, @P email: str,
         request: HttpServletRequest
     ): Any
     {
@@ -93,9 +93,7 @@ class CommentController(private val commentRepo: PendingCommentRepo)
         //            return "没有查到验证码".http(400)
 
         // TODO: Check if id exists
-        val content = content.dec()
-        val id = id.dec()
-        val name = name.dec().ifBlank { "Anonymous" }
+        val name = name.ifBlank { "Anonymous" }
         val email = if (email.isBlank() || !email.isValidEmail())
             "anonymous@example.com" else email
 

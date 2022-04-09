@@ -91,8 +91,8 @@ class CommentController(private val commentRepo: PendingCommentRepo)
     ): Any
     {
         // Verify captcha
-        //        if (!verifyCaptcha(secrets.recaptchaSecret, captcha.dec()))
-        //            return "没有查到验证码".http(400)
+        if (!verifyCaptcha(secrets.recaptchaSecret, captcha))
+            return "没有查到验证码".http(400)
 
         // TODO: Check if id exists
         val name = name.ifBlank { "Anonymous" }

@@ -22,12 +22,11 @@ dependencies {
 	implementation("org.springframework.boot:spring-boot-starter-web:_")
 	implementation("org.jetbrains.kotlin:kotlin-reflect")
 	implementation("org.jetbrains.kotlin:kotlin-stdlib-jdk8")
-	implementation("org.springframework.boot:spring-boot-starter-web")
-	testImplementation(Spring.boot.test)
+	testImplementation("org.springframework.boot:spring-boot-starter-test")
 
 	// Database
 	// https://my.oschina.net/mingyuelab/blog/3190313
-	implementation(Spring.boot.data.jpa)
+	implementation("org.springframework.boot:spring-boot-starter-data-jpa")
 	implementation("org.xerial:sqlite-jdbc:_")
 	implementation("com.github.gwenn:sqlite-dialect:_")
 	// https://mvnrepository.com/artifact/org.mariadb.jdbc/mariadb-java-client

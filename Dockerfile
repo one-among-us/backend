@@ -3,6 +3,7 @@
 FROM gradle:7.4.2-jdk11-alpine AS build
 COPY --chown=gradle:gradle . /home/gradle/src
 WORKDIR /home/gradle/src
+ENV JAVA_OPTS="-Xmx2g -XX:MaxMetaspaceSize=512m -XX:+HeapDumpOnOutOfMemoryError -Dfile.encoding=UTF-8"
 RUN gradle build
 RUN rm /home/gradle/src/build/libs/*-plain.jar
 

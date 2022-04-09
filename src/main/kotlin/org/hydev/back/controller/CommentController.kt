@@ -7,7 +7,6 @@ import com.github.kotlintelegrambot.entities.ChatId
 import com.github.kotlintelegrambot.entities.InlineKeyboardMarkup
 import com.github.kotlintelegrambot.entities.keyboard.InlineKeyboardButton
 import com.github.kotlintelegrambot.network.fold
-import com.google.gson.Gson
 import org.hydev.back.*
 import org.hydev.back.db.PendingComment
 import org.hydev.back.db.PendingCommentRepo
@@ -66,7 +65,7 @@ class CommentController(private val commentRepo: PendingCommentRepo)
         println("Adding Comment ${content}")
 
         // Write commit
-        val url = commitDirectly(comment.submitter, DataEdit(fPath, Gson().toJson(content)), cMsg)
+        val url = commitDirectly(comment.submitter, DataEdit(fPath, content), cMsg)
         bot.deleteMessage(chatId, statusMsgId)
 
         // Update database

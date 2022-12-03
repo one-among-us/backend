@@ -1,13 +1,13 @@
 # syntax=docker/dockerfile:1
 
-FROM gradle:7.4.2-jdk11-alpine AS build
+FROM gradle:7.6-jdk11-alpine AS build
 COPY --chown=gradle:gradle . /home/gradle/src
 WORKDIR /home/gradle/src
 ENV JAVA_OPTS="-Xmx2g -XX:MaxMetaspaceSize=512m -XX:+HeapDumpOnOutOfMemoryError -Dfile.encoding=UTF-8"
 RUN gradle build
 RUN rm /home/gradle/src/build/libs/*-plain.jar
 
-FROM adoptopenjdk/openjdk11-openj9:jre-11.0.14_9_openj9-0.30.0-alpine
+FROM adoptopenjdk/openjdk11-openj9:jre-11.0.16_8_openj9-0.33.0-alpine
 
 RUN mkdir /app
 RUN mkdir /app/libs

@@ -6,7 +6,6 @@ import com.github.kotlintelegrambot.dispatcher.handlers.HandleCallbackQuery
 import com.github.kotlintelegrambot.entities.ChatId
 import com.github.kotlintelegrambot.entities.InlineKeyboardMarkup
 import com.github.kotlintelegrambot.entities.keyboard.InlineKeyboardButton
-import com.github.kotlintelegrambot.network.fold
 import org.hydev.back.*
 import org.hydev.back.db.PendingComment
 import org.hydev.back.db.PendingCommentRepo
@@ -16,7 +15,6 @@ import org.springframework.web.bind.annotation.RequestMapping
 import org.springframework.web.bind.annotation.RestController
 import java.sql.Date
 import javax.servlet.http.HttpServletRequest
-
 
 
 @RestController
@@ -48,14 +46,16 @@ class CommentController(private val commentRepo: PendingCommentRepo)
         // Rejected, remove
         if (!pass)
         {
-            println("[-] 审核结果: Rejected! Comment $id deleted.")
+            println("[-] Comment rejected! Comment $id deleted.")
             bot.editMessageText(chatId, msgId, inlId, "$message\n- 已删除❌")
             return@callback
         }
 
         // Commit changes
         var statusMsgId = 0L
-        bot.sendMessage(chatId, "正在提交更改...").fold({ statusMsgId = it!!.result!!.messageId })
+        bot.sendMessage(chatId, "正在提交更改...").fold(
+            { statusMsgId = it.messageId },
+            { System.err.println("> Failed to send submission message: $it") })
         val comment = commentRepo.queryById(id)!!
 
         // Create commit content
@@ -63,7 +63,7 @@ class CommentController(private val commentRepo: PendingCommentRepo)
         val cMsg = "[+] Comment added by ${comment.submitter} for ${comment.personId}"
         val content = json("id" to comment.id, "content" to comment.content,
             "submitter" to comment.submitter, "date" to comment.date)
-        println("[+] 审核结果: Approved! Adding Comment ${content}")
+        println("[+] Comment approved. Adding Comment $id: $content")
 
         // Write commit
         val url = commitDirectly(comment.submitter, DataEdit(fPath, content), cMsg)
@@ -90,7 +90,15 @@ class CommentController(private val commentRepo: PendingCommentRepo)
         request: HttpServletRequest
     ): Any
     {
-        println("[+] Received request: $request | $id | $captcha | $name | $email")
+        val ip = request.getIP()
+        println("""
+[+] Comment received. 
+> IP: $ip
+> ID: $id
+> Name: $name
+> Email: $email
+> Content: $content
+<< EOF >>""")
 
         // Verify captcha
         if (!verifyCaptcha(secrets.recaptchaSecret, captcha))
@@ -112,7 +120,7 @@ class CommentController(private val commentRepo: PendingCommentRepo)
 
 $content
 
-- IP: ${request.getIP()}
+- IP: $ip
 - 姓名: $name
 - 邮箱: $email"""
 

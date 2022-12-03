@@ -3,11 +3,13 @@ package org.hydev.back.controller
 import org.hydev.back.P
 import org.hydev.back.db.Flower
 import org.hydev.back.db.FlowerRepo
+import org.hydev.back.getIP
 import org.hydev.back.str
 import org.springframework.web.bind.annotation.CrossOrigin
 import org.springframework.web.bind.annotation.GetMapping
 import org.springframework.web.bind.annotation.RequestMapping
 import org.springframework.web.bind.annotation.RestController
+import javax.servlet.http.HttpServletRequest
 
 @RestController
 @RequestMapping("/flowers")
@@ -26,9 +28,10 @@ class FlowerController(
     }
 
     @GetMapping("/give")
-    fun give(@P id: str): Any
+    fun give(@P id: str, request: HttpServletRequest): Any
     {
         val id = id.lowercase()
+        println("[+] Flower added for $id by ${request.getIP()}")
 
         var flower = flowerRepo.queryByPersonId(id)
         if (flower == null)

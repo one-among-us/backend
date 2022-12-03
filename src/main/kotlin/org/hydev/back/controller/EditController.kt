@@ -58,7 +58,7 @@ $yml
 
         return try
         {
-            bot.sendMessage(ChatId.fromId(secrets.telegramChatID), notif)
+            bot.sendMessage(ChatId.fromId(secrets.telegramChatID), notif, disableWebPagePreview = true)
 
             // This fails for some reason:
             // createPullRequest(name, email,

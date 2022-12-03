@@ -44,6 +44,12 @@ dependencies {
 
 	// Kotlin Telegram Bot
 	implementation("io.github.kotlin-telegram-bot.kotlin-telegram-bot:telegram:_")
+
+	// Jackson serialization
+	// https://mvnrepository.com/artifact/com.fasterxml.jackson.core/jackson-databind
+	implementation("com.fasterxml.jackson.core:jackson-databind:2.14.1")
+	// https://mvnrepository.com/artifact/com.fasterxml.jackson.core/jackson-dataformat-yaml
+	implementation("com.fasterxml.jackson.dataformat:jackson-dataformat-yaml:2.14.1")
 }
 
 tasks.withType<KotlinCompile> {

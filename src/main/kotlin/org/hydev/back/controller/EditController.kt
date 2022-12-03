@@ -66,6 +66,11 @@ $yml
 
             "Success".http(200)
         }
-        catch (e: Exception) { "创建更改请求失败（${e.message}）".http(500) }
+        catch (e: Exception) {
+            println("> Error: ${e.message}")
+            e.printStackTrace()
+
+            "创建更改请求失败（${e.message}）".http(500)
+        }
     }
 }

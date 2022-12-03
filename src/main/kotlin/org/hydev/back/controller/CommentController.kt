@@ -48,6 +48,7 @@ class CommentController(private val commentRepo: PendingCommentRepo)
         // Rejected, remove
         if (!pass)
         {
+            println("[-] 审核结果: Rejected! Comment $id deleted.")
             bot.editMessageText(chatId, msgId, inlId, "$message\n- 已删除❌")
             return@callback
         }
@@ -62,7 +63,7 @@ class CommentController(private val commentRepo: PendingCommentRepo)
         val cMsg = "[+] Comment added by ${comment.submitter} for ${comment.personId}"
         val content = json("id" to comment.id, "content" to comment.content,
             "submitter" to comment.submitter, "date" to comment.date)
-        println("Adding Comment ${content}")
+        println("[+] 审核结果: Approved! Adding Comment ${content}")
 
         // Write commit
         val url = commitDirectly(comment.submitter, DataEdit(fPath, content), cMsg)
@@ -89,9 +90,14 @@ class CommentController(private val commentRepo: PendingCommentRepo)
         request: HttpServletRequest
     ): Any
     {
+        println("[+] Received request: $request | $id | $captcha | $name | $email")
+
         // Verify captcha
         if (!verifyCaptcha(secrets.recaptchaSecret, captcha))
+        {
+            println("> Rejected: Cannot verify captcha")
             return "没有查到验证码".http(400)
+        }
 
         // TODO: Check if id exists
         val name = name.ifBlank { "Anonymous" }
@@ -101,16 +107,21 @@ class CommentController(private val commentRepo: PendingCommentRepo)
         // Add to database
         val comment = commentRepo.save(PendingComment(0, id, content, name, email, Date(java.util.Date().time)))
 
+        val notif = """
+#${comment.id} - $id 收到了新的留言：
+
+$content
+
+- IP: ${request.getIP()}
+- 姓名: $name
+- 邮箱: $email"""
+
         // Send message on telegram
-        bot.sendMessage(ChatId.fromId(secrets.telegramChatID), """
-            #${comment.id} - $id 收到了新的留言：
-            
-            $content
-            
-            - IP: ${request.getIP()}
-            - 姓名: $name
-            - 邮箱: $email
-        """.trimIndent(), replyMarkup = replyMarkup)
+        bot.sendMessage(ChatId.fromId(secrets.telegramChatID), notif, replyMarkup = replyMarkup)
+
+        // Print log
+        println("> Accepted, added to database.")
+        println(notif)
 
         return "Success"
     }

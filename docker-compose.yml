@@ -1,5 +1,25 @@
-version: "2"
 services:
-  one-among-us-back:
+  backend:
+    container_name: oau-backend
     build: .
-    image: hykilpikonna/one-among-us-back:1.0.5
+    restart: always
+    volumes:
+      - './data/secrets/:/app/secrets/'
+    depends_on:
+      - db
+    environment:
+      - SPRING_JPA_DATABASE_PLATFORM=org.hibernate.dialect.MariaDB103Dialect
+      - SPRING_DATASOURCE_URL=jdbc:mariadb://oau-db:3306/memories
+      - SPRING_DATASOURCE_USERNAME=root
+      - SPRING_DATASOURCE_PASSWORD=qwq
+      - SPRING_JPA_HIBERNATE_DDL_AUTO=update
+  db:
+    container_name: oau-db
+    hostname: oau-db
+    image: mariadb:latest
+    restart: always
+    volumes:
+      - './data/mysql/:/var/lib/mysql/'
+    environment:
+      MYSQL_ROOT_PASSWORD: qwq
+      MYSQL_DATABASE: memories

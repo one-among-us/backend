@@ -35,8 +35,6 @@ dependencies {
 	// Github Client
 	// https://mvnrepository.com/artifact/org.kohsuke/github-api
 	implementation("org.kohsuke:github-api:_")
-	// https://mvnrepository.com/artifact/org.eclipse.jgit/org.eclipse.jgit
-	implementation("org.eclipse.jgit:org.eclipse.jgit:_")
 
 	// https://mvnrepository.com/artifact/com.github.kittinunf.fuel/fuel
 	implementation("com.github.kittinunf.fuel:fuel:_")

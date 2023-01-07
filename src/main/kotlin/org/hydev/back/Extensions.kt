@@ -58,3 +58,14 @@ suspend fun File.downloadFromUrl(url: String) = suspendCoroutine { cont ->
             failure = { cont.resumeWithException(it) })
         }
 }
+
+fun String.countryCodeToEmoji(): String
+{
+    val flagOffset = 0x1F1E6
+    val asciiOffset = 0x41
+
+    val firstChar = this.codePointAt(0) - asciiOffset + flagOffset
+    val secondChar = this.codePointAt(1) - asciiOffset + flagOffset
+
+    return String(Character.toChars(firstChar) + Character.toChars(secondChar))
+}

@@ -36,6 +36,7 @@ dependencies {
 	// https://mvnrepository.com/artifact/org.kohsuke/github-api
 	implementation("org.kohsuke:github-api:_")
 
+	// HTTP Client
 	// https://mvnrepository.com/artifact/com.github.kittinunf.fuel/fuel
 	implementation("com.github.kittinunf.fuel:fuel:_")
 	implementation("com.github.kittinunf.fuel:fuel-jackson:_")
@@ -48,6 +49,10 @@ dependencies {
 	implementation("com.fasterxml.jackson.core:jackson-databind:2.14.1")
 	// https://mvnrepository.com/artifact/com.fasterxml.jackson.core/jackson-dataformat-yaml
 	implementation("com.fasterxml.jackson.dataformat:jackson-dataformat-yaml:2.14.1")
+
+	// Geoip
+	implementation("com.maxmind.geoip2:geoip2:4.0.0")
+	implementation("com.github.jarod:qqwry-java:0.9.0")
 }
 
 tasks.withType<KotlinCompile> {

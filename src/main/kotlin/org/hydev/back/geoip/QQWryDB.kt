@@ -47,6 +47,7 @@ class QQWryDB(
     {
         update()
 
-        return db!!.findIP(ip).run { "$mainInfo $subInfo" }
+        return db!!.findIP(ip).run { mainInfo +
+            if (subInfo != null && subInfo.lowercase() != "cz88.net") " $subInfo" else "" }
     }
 }

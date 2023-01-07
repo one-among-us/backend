@@ -1,12 +1,18 @@
 package org.hydev.back
 
+import com.github.kittinunf.fuel.Fuel
 import com.google.gson.Gson
 import org.springframework.http.ResponseEntity
 import org.springframework.web.bind.annotation.RequestBody
 import org.springframework.web.bind.annotation.RequestHeader
 import org.springframework.web.bind.annotation.RequestParam
+import java.io.File
+import java.io.FileOutputStream
 import java.text.SimpleDateFormat
 import java.util.*
+import kotlin.coroutines.resume
+import kotlin.coroutines.resumeWithException
+import kotlin.coroutines.suspendCoroutine
 
 typealias P = RequestParam
 typealias B = RequestBody
@@ -34,3 +40,21 @@ val emailRegex = "^(?=.{1,64}@)[\\p{L}0-9_-]+(\\.[\\p{L}0-9_-]+)*@[^-][\\p{L}0-9
  * @return bool
  */
 fun str.isValidEmail(): bool = emailRegex.matches(this)
+
+operator fun File.div(s: String) = File(this, s)
+fun File.ensureParents() = apply { parentFile.mkdirs() }
+
+suspend fun File.downloadFromUrl(url: String) = suspendCoroutine { cont ->
+    val outStream = FileOutputStream(this.ensureParents())
+
+    Fuel.download(url)
+        .streamDestination { _, req -> Pair(outStream) { req.body.toStream() } }
+        .progress { readBytes, totalBytes ->
+            val progress = readBytes.toFloat() / totalBytes.toFloat() * 100
+            print("\rDownloading $name: $readBytes / $totalBytes ($progress %)")
+        }
+        .response { result -> result.fold(
+            success = { println(); cont.resume(it) },
+            failure = { cont.resumeWithException(it) })
+        }
+}

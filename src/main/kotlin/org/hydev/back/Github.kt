@@ -2,15 +2,12 @@
 
 package org.hydev.back
 
-import org.eclipse.jgit.transport.UsernamePasswordCredentialsProvider
 import org.kohsuke.github.GitHubBuilder
 
 data class DataEdit(
     val filePath: str,
     val content: str
 )
-
-val auth = UsernamePasswordCredentialsProvider(secrets.githubToken, "")
 
 /**
  * Commit directly to the repository

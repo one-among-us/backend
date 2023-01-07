@@ -1,5 +1,6 @@
 package org.hydev.back.geoip
 
+import com.maxmind.geoip2.exception.AddressNotFoundException
 import org.springframework.stereotype.Component
 import java.io.File
 
@@ -13,8 +14,20 @@ class GeoIP
     {
         val notif = mutableListOf<String>()
 
-        runCatching { geoLite.info(ip) }.onSuccess { notif += "- GeoLite: $it" }.onFailure { it.printStackTrace() }
-        runCatching { qqWry.info(ip) }.onSuccess { notif += "- QQWry: $it" }.onFailure { it.printStackTrace() }
+        try {
+            notif += "- GeoLite: ${geoLite.info(ip)}"
+        }
+        catch (_: AddressNotFoundException) {}
+        catch (e: Exception) {
+            e.printStackTrace()
+        }
+
+        try {
+            notif += "- QQWry: ${qqWry.info(ip)}"
+        }
+        catch (e: Exception) {
+            e.printStackTrace()
+        }
 
         return notif.ifEmpty { null }?.joinToString("\n")
     }

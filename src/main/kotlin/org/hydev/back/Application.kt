@@ -7,7 +7,9 @@ import com.github.kotlintelegrambot.dispatcher.callbackQuery
 import com.github.kotlintelegrambot.dispatcher.command
 import com.github.kotlintelegrambot.entities.ChatId
 import com.github.kotlintelegrambot.logging.LogLevel
+import kotlinx.coroutines.*
 import org.hydev.back.controller.CommentController
+import org.hydev.back.geoip.GeoIP
 import org.springframework.boot.autoconfigure.SpringBootApplication
 import org.springframework.boot.runApplication
 import org.springframework.stereotype.Component
@@ -20,8 +22,9 @@ lateinit var bot: Bot
 class Application
 
 @Component
-class PostConstruct(private val commentController: CommentController)
+class PostConstruct(private val commentController: CommentController, private val geoIP: GeoIP)
 {
+	@OptIn(DelicateCoroutinesApi::class)
 	@PostConstruct
 	fun init()
 	{
@@ -36,6 +39,9 @@ class PostConstruct(private val commentController: CommentController)
 			}
 		}
 		bot.sendMessage(ChatId.fromId(secrets.telegramChatID), "Server Started.")
+		GlobalScope.launch {
+			println(geoIP.info("127.0.0.1"))
+		}
 		bot.startPolling()
 	}
 }

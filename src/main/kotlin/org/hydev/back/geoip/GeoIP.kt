@@ -13,8 +13,8 @@ class GeoIP
     {
         val notif = mutableListOf<String>()
 
-        runCatching { geoLite.info(ip) }.onSuccess { notif += "- GeoLite: $it" }
-        runCatching { qqWry.info(ip) }.onSuccess { notif += "- QQWry: $it" }
+        runCatching { geoLite.info(ip) }.onSuccess { notif += "- GeoLite: $it" }.onFailure { it.printStackTrace() }
+        runCatching { qqWry.info(ip) }.onSuccess { notif += "- QQWry: $it" }.onFailure { it.printStackTrace() }
 
         return notif.ifEmpty { null }?.joinToString("\n")
     }

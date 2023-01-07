@@ -100,9 +100,3 @@ class GeoLiteDB(
         return results.joinToString(" | ")
     }
 }
-
-
-suspend fun main(args: Array<String>)
-{
-    println(GeoLiteDB().info("61.227.219.146"))
-}

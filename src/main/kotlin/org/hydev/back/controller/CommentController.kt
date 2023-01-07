@@ -6,9 +6,12 @@ import com.github.kotlintelegrambot.dispatcher.handlers.HandleCallbackQuery
 import com.github.kotlintelegrambot.entities.ChatId
 import com.github.kotlintelegrambot.entities.InlineKeyboardMarkup
 import com.github.kotlintelegrambot.entities.keyboard.InlineKeyboardButton
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.withContext
 import org.hydev.back.*
 import org.hydev.back.db.PendingComment
 import org.hydev.back.db.PendingCommentRepo
+import org.hydev.back.geoip.GeoIP
 import org.springframework.web.bind.annotation.CrossOrigin
 import org.springframework.web.bind.annotation.PostMapping
 import org.springframework.web.bind.annotation.RequestMapping
@@ -20,8 +23,11 @@ import javax.servlet.http.HttpServletRequest
 @RestController
 @RequestMapping("/comment")
 @CrossOrigin(origins = ["*"])
-class CommentController(private val commentRepo: PendingCommentRepo)
-{
+class CommentController(
+    private val commentRepo: PendingCommentRepo,
+    private val geoIP: GeoIP
+) {
+
     val replyMarkup = InlineKeyboardMarkup.createSingleRowKeyboard(
         InlineKeyboardButton.CallbackData(
             text = "通过",
@@ -85,7 +91,7 @@ class CommentController(private val commentRepo: PendingCommentRepo)
     }
 
     @PostMapping("/add")
-    fun addComment(
+    suspend fun addComment(
         @P id: str, @P content: str, @P captcha: str, @P name: str, @P email: str,
         request: HttpServletRequest
     ): Any
@@ -113,16 +119,22 @@ class CommentController(private val commentRepo: PendingCommentRepo)
             "anonymous@example.com" else email
 
         // Add to database
-        val comment = commentRepo.save(PendingComment(0, id, content, name, email, Date(java.util.Date().time)))
+        val comment = withContext(Dispatchers.IO) {
+            commentRepo.save(PendingComment(0, id, content, name, email, Date(java.util.Date().time)))
+        }
 
-        val notif = """
+        var notif = """
 #${comment.id} - $id 收到了新的留言：
 
 $content
 
-- IP: $ip
-- 姓名: $name
-- 邮箱: $email"""
+- IP: $ip"""
+
+        if (name != "Anonymous")
+            notif += "\n- 姓名: $name"
+        if (email != "anonymous@example.com")
+            notif += "\n- 邮箱: $email"
+        geoIP.info(ip)?.let { notif += "\n$it" }
 
         // Send message on telegram
         bot.sendMessage(ChatId.fromId(secrets.telegramChatID), notif, replyMarkup = replyMarkup)

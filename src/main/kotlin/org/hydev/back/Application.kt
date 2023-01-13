@@ -3,9 +3,8 @@ package org.hydev.back
 import com.github.kotlintelegrambot.Bot
 import com.github.kotlintelegrambot.bot
 import com.github.kotlintelegrambot.dispatch
+import com.github.kotlintelegrambot.dispatcher.Dispatcher
 import com.github.kotlintelegrambot.dispatcher.callbackQuery
-import com.github.kotlintelegrambot.dispatcher.command
-import com.github.kotlintelegrambot.entities.ChatId
 import com.github.kotlintelegrambot.logging.LogLevel
 import kotlinx.coroutines.*
 import org.hydev.back.controller.CommentController
@@ -33,7 +32,7 @@ class PostConstruct(private val commentController: CommentController, private va
 			logLevel = LogLevel.Error
 			token = secrets.telegramBotToken
 			dispatch {
-				command("start") { bot.sendMessage(ChatId.fromId(message.chat.id), "🐱") }
+				cmd("start") { "🐈 Running!" }
 				callbackQuery("comment-pass", commentController.commentCallback)
 				callbackQuery("comment-reject", commentController.commentCallback)
 				callbackQuery("comment-ban", commentController.commentCallback)

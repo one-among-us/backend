@@ -33,6 +33,8 @@ data class Secrets(
     val telegramBotToken: str,
     val telegramChatID: int,
     val telegramBlockedChatID: int,
+    val harmClassifierUrl: str?,
+    val harmClassifierToken: str?
 )
 
 fun getSecrets(): Secrets

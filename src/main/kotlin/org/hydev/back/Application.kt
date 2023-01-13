@@ -17,6 +17,16 @@ import javax.annotation.PostConstruct
 val secrets = getSecrets()
 lateinit var bot: Bot
 
+/**
+ * Command that can only be used in the telegram chats specified in the secrets
+ */
+fun Dispatcher.secureCmd(name: String, handler: CmdHandler) = cmd(name) {
+	val id = message.chat.id
+	if (id != secrets.telegramChatID && id != secrets.telegramBlockedChatID)
+		"Insufficient permissions. This command can only be used in the group chat."
+	else handler(this)
+}
+
 @SpringBootApplication
 class Application
 

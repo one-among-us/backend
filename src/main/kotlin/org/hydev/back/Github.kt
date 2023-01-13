@@ -30,5 +30,5 @@ fun commitDirectly(editor: str, edit: DataEdit, message: str? = null): str
     val commit = ghRepo.createContent().path(edit.filePath).content(edit.content)
         .message(message ?: "User $editor pushed an edit").commit()
 
-    return commit.commit!!.url.toString()
+    return commit.commit!!.htmlUrl.toString()
 }

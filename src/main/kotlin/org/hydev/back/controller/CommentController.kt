@@ -98,10 +98,7 @@ class CommentController(
         // Attach URL
         bot.editMessageText(chatId, msgId, inlId, "$message\n- 已通过审核✅", replyMarkup =
             InlineKeyboardMarkup.createSingleRowKeyboard(
-                InlineKeyboardButton.Url(
-                    text = "查看 Commit",
-                    url = url
-                )
+                InlineKeyboardButton.Url(text = "查看 Commit", url = url)
             )
         )
     }

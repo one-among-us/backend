@@ -65,6 +65,8 @@ suspend fun File.downloadFromUrl(url: String) = suspendCoroutine { cont ->
         }
 }
 
+fun <T> List<T>.slice(start: Int, end: Int? = null) = slice(start until (end ?: size))
+
 fun String.countryCodeToEmoji(): String
 {
     val flagOffset = 0x1F1E6

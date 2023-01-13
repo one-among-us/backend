@@ -9,6 +9,8 @@ import com.github.kotlintelegrambot.entities.keyboard.InlineKeyboardButton
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import org.hydev.back.*
+import org.hydev.back.ai.HarmLevel
+import org.hydev.back.ai.IHarmClassifier
 import org.hydev.back.db.Ban
 import org.hydev.back.db.BanRepo
 import org.hydev.back.db.PendingComment
@@ -28,7 +30,8 @@ import javax.servlet.http.HttpServletRequest
 class CommentController(
     private val commentRepo: PendingCommentRepo,
     private val banRepo: BanRepo,
-    private val geoIP: GeoIP
+    private val geoIP: GeoIP,
+    private val harmClassifier: IHarmClassifier
 ) {
 
     val replyMarkup = InlineKeyboardMarkup.createSingleRowKeyboard(
@@ -167,10 +170,17 @@ $content
 
         // Check if ip is banned. If it is, send it to the blocked chat instead.
         val ban = banRepo.queryByIp(ip)
-        val chatId = if (ban == null) secrets.telegramChatID else
-        {
+        val chatId = if (ban != null) {
             notif += "\n- ❌ IP 已被封禁！"
             secrets.telegramBlockedChatID
+        }
+        else {
+            // Check if AI think it's inappropriate
+            val clas = harmClassifier.classify(content)
+            clas?.msg?.let { notif += "\n- $it" }
+
+            if (clas == HarmLevel.HARMFUL) secrets.telegramBlockedChatID
+            else secrets.telegramChatID
         }
 
         // Send message on telegram

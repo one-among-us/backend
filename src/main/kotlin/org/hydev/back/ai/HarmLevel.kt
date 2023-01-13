@@ -1,6 +1,6 @@
 package org.hydev.back.ai
 
-enum class HarmLevel(msg: String? = null) {
+enum class HarmLevel(val msg: String? = null) {
     SAFE,
     HARMFUL("❌ AI 标记: 有害"),
     MAYBE("⚠️ AI 标记: 可能有害"),

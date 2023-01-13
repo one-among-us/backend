@@ -37,6 +37,10 @@ class CommentController(
             callbackData = "comment-pass"
         ),
         InlineKeyboardButton.CallbackData(
+            text = "Spoiler 后通过",
+            callbackData = "comment-pass-spoiler"
+        ),
+        InlineKeyboardButton.CallbackData(
             text = "忽略",
             callbackData = "comment-reject"
         ),
@@ -47,7 +51,7 @@ class CommentController(
     )
 
     val commentCallback: HandleCallbackQuery = callback@ {
-        val pass = callbackQuery.data == "comment-pass"
+        val pass = callbackQuery.data.startsWith("comment-pass")
         val chatId = ChatId.fromId(callbackQuery.message!!.chat.id)
         val msgId = callbackQuery.message!!.messageId
         val inlId = callbackQuery.inlineMessageId
@@ -79,6 +83,10 @@ class CommentController(
             { statusMsgId = it.messageId },
             { System.err.println("> Failed to send submission message: $it") })
         val comment = commentRepo.queryById(id)!!
+
+        // Spoiler
+        if (callbackQuery.data == "comment-pass-spoiler")
+            comment.content = "||${comment.content.replace('\n', ' ')}||"
 
         // Create commit content
         val fPath = "people/${comment.personId}/comments/${date("yyyy-MM-dd")}-C${comment.id}.json"

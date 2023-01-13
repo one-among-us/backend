@@ -34,3 +34,10 @@ class UrlHarmClassifier : IHarmClassifier
         }
     }
 }
+
+suspend fun main(args: Array<String>) {
+    // HARMFUL
+    println(UrlHarmClassifier().classify("你去死"))
+    // SAFE
+    println(UrlHarmClassifier().classify("猫猫很可爱"))
+}

@@ -25,6 +25,7 @@ class GeoIP
         try {
             notif += "- QQWry: ${qqWry.info(ip)}"
         }
+        catch (_: IllegalArgumentException) {}
         catch (e: Exception) {
             e.printStackTrace()
         }

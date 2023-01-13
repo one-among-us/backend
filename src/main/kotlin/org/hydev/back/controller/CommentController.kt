@@ -67,6 +67,7 @@ class CommentController(
             val entry = Ban(ip = ip, reason = "Bad comment #$id")
             banRepo.save(entry)
             bot.editMessageText(chatId, msgId, inlId, "$id - 已封禁 $ip")
+            return@callback
         }
 
         // Rejected, remove
@@ -168,7 +169,7 @@ $content
         val ban = banRepo.queryByIp(ip)
         val chatId = if (ban == null) secrets.telegramChatID else
         {
-            notif += "- ❌ IP 已被封禁！"
+            notif += "\n- ❌ IP 已被封禁！"
             secrets.telegramBlockedChatID
         }
 

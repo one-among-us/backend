@@ -120,7 +120,14 @@ class CommentController(
 
         // Add to database
         val comment = withContext(Dispatchers.IO) {
-            commentRepo.save(PendingComment(0, id, content, name, email, Date(java.util.Date().time)))
+            commentRepo.save(PendingComment(
+                personId = id,
+                content = content,
+                submitter = name,
+                email = email,
+                date = Date(java.util.Date().time),
+                ip = ip
+            ))
         }
 
         var notif = """

@@ -20,7 +20,8 @@ data class PendingComment(
     var submitter: str = "",
     var email: str = "",
     var date: Date = Date(0),
-    var approved: bool = false
+    var approved: bool = false,
+    var ip: str = ""
 )
 {
     override fun equals(other: Any?): Boolean

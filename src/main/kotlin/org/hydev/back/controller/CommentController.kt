@@ -37,8 +37,12 @@ class CommentController(
             callbackData = "comment-pass"
         ),
         InlineKeyboardButton.CallbackData(
-            text = "删除",
+            text = "忽略",
             callbackData = "comment-reject"
+        ),
+        InlineKeyboardButton.CallbackData(
+            text = "封禁 IP",
+            callbackData = "comment-ban"
         )
     )
 
@@ -51,6 +55,15 @@ class CommentController(
         val id = message.split(" ")[0].substring(1).toLong()
 
         bot.editMessageReplyMarkup(chatId, msgId, inlId, null)
+
+        // Ban ip
+        if (callbackQuery.data == "comment-ban")
+        {
+            val ip = commentRepo.queryById(id)!!.ip
+            val entry = Ban(ip = ip, reason = "Bad comment #$id")
+            banRepo.save(entry)
+            bot.editMessageText(chatId, msgId, inlId, "$id - 已封禁 $ip")
+        }
 
         // Rejected, remove
         if (!pass)

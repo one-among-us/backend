@@ -36,6 +36,7 @@ class PostConstruct(private val commentController: CommentController, private va
 				command("start") { bot.sendMessage(ChatId.fromId(message.chat.id), "🐱") }
 				callbackQuery("comment-pass", commentController.commentCallback)
 				callbackQuery("comment-reject", commentController.commentCallback)
+				callbackQuery("comment-ban", commentController.commentCallback)
 			}
 		}
 		bot.sendMessage(ChatId.fromId(secrets.telegramChatID), "Server Started.")

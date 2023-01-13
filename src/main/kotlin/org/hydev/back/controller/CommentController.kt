@@ -9,6 +9,8 @@ import com.github.kotlintelegrambot.entities.keyboard.InlineKeyboardButton
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import org.hydev.back.*
+import org.hydev.back.db.Ban
+import org.hydev.back.db.BanRepo
 import org.hydev.back.db.PendingComment
 import org.hydev.back.db.PendingCommentRepo
 import org.hydev.back.geoip.GeoIP
@@ -25,6 +27,7 @@ import javax.servlet.http.HttpServletRequest
 @CrossOrigin(origins = ["*"])
 class CommentController(
     private val commentRepo: PendingCommentRepo,
+    private val banRepo: BanRepo,
     private val geoIP: GeoIP
 ) {
 
@@ -117,6 +120,11 @@ class CommentController(
         val name = name.ifBlank { "Anonymous" }
         val email = if (email.isBlank() || !email.isValidEmail())
             "anonymous@example.com" else email
+
+        // Check if ip is banned
+        val ban = banRepo.queryByIp(ip)
+        if (ban != null)
+            return "您已被封禁，原因：${ban.reason}".http(403)
 
         // Add to database
         val comment = withContext(Dispatchers.IO) {

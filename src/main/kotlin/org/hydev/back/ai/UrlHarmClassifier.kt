@@ -3,6 +3,7 @@ package org.hydev.back.ai
 import com.github.kittinunf.fuel.Fuel
 import com.github.kittinunf.fuel.coroutines.awaitStringResponse
 import org.hydev.back.secrets
+import org.springframework.stereotype.Component
 
 /**
  * Use HyDEV's external service for classifying harm level, since the deployed server doesn't have a GPU.
@@ -10,6 +11,7 @@ import org.hydev.back.secrets
  * @author Azalea (https://github.com/hykilpikonna)
  * @since 2023-01-13
  */
+@Component
 class UrlHarmClassifier : IHarmClassifier
 {
     override suspend fun classify(text: String): HarmLevel?
@@ -25,8 +27,10 @@ class UrlHarmClassifier : IHarmClassifier
             HarmLevel.valueOf(result.uppercase())
         }
         catch (e: Exception) {
-            if (e !is IllegalArgumentException) e.printStackTrace()
-            HarmLevel.INVALID
+            if (e is IllegalArgumentException) return HarmLevel.INVALID
+
+            System.err.println("[AI] Error: Cannot connect to ${secrets.harmClassifierUrl}: ${e.message}")
+            HarmLevel.OFFLINE
         }
     }
 }

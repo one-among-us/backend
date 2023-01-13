@@ -134,11 +134,6 @@ class CommentController(
         val email = if (email.isBlank() || !email.isValidEmail())
             "anonymous@example.com" else email
 
-        // Check if ip is banned
-        val ban = banRepo.queryByIp(ip)
-        if (ban != null)
-            return "您已被封禁，原因：${ban.reason}".http(403)
-
         // Add to database
         val comment = withContext(Dispatchers.IO) {
             commentRepo.save(PendingComment(
@@ -164,8 +159,16 @@ $content
             notif += "\n- 邮箱: $email"
         geoIP.info(ip)?.let { notif += "\n$it" }
 
+        // Check if ip is banned. If it is, send it to the blocked chat instead.
+        val ban = banRepo.queryByIp(ip)
+        val chatId = if (ban == null) secrets.telegramChatID else
+        {
+            notif += "- ❌ IP 已被封禁！"
+            secrets.telegramBlockedChatID
+        }
+
         // Send message on telegram
-        bot.sendMessage(ChatId.fromId(secrets.telegramChatID), notif, replyMarkup = replyMarkup)
+        bot.sendMessage(ChatId.fromId(chatId), notif, replyMarkup = replyMarkup)
 
         // Print log
         println("> Accepted, added to database.")

@@ -17,6 +17,10 @@ repositories {
 	maven { setUrl("https://jitpack.io") }
 }
 
+springBoot {
+	mainClass.value("org.hydev.back.ApplicationKt")
+}
+
 dependencies {
 	implementation("org.springframework.boot:spring-boot-starter:_")
 	implementation("org.springframework.boot:spring-boot-starter-web:_")

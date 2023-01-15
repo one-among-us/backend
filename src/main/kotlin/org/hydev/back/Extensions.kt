@@ -1,6 +1,12 @@
 package org.hydev.back
 
 import com.github.kittinunf.fuel.Fuel
+import com.github.kotlintelegrambot.dispatcher.Dispatcher
+import com.github.kotlintelegrambot.dispatcher.command
+import com.github.kotlintelegrambot.dispatcher.handlers.CommandHandlerEnvironment
+import com.github.kotlintelegrambot.entities.ChatId
+import com.github.kotlintelegrambot.entities.ParseMode
+import com.github.kotlintelegrambot.entities.ReplyMarkup
 import com.google.gson.Gson
 import org.springframework.http.ResponseEntity
 import org.springframework.web.bind.annotation.RequestBody
@@ -59,6 +65,8 @@ suspend fun File.downloadFromUrl(url: String) = suspendCoroutine { cont ->
         }
 }
 
+fun <T> List<T>.slice(start: Int, end: Int? = null) = slice(start until (end ?: size))
+
 fun String.countryCodeToEmoji(): String
 {
     val flagOffset = 0x1F1E6
@@ -68,4 +76,20 @@ fun String.countryCodeToEmoji(): String
     val secondChar = this.codePointAt(1) - asciiOffset + flagOffset
 
     return String(Character.toChars(firstChar) + Character.toChars(secondChar))
+}
+
+fun CommandHandlerEnvironment.reply(
+    text: String,
+    parseMode: ParseMode? = null,
+    disableWebPagePreview: Boolean? = null,
+    disableNotification: Boolean? = null,
+    replyToMessageId: Long? = null,
+    allowSendingWithoutReply: Boolean? = null,
+    replyMarkup: ReplyMarkup? = null) = bot.sendMessage(ChatId.fromId(message.chat.id), text, parseMode, disableWebPagePreview, disableNotification, replyToMessageId, allowSendingWithoutReply, replyMarkup)
+
+
+typealias CmdHandler = CommandHandlerEnvironment.() -> String?
+
+fun Dispatcher.cmd(name: String, handler: CmdHandler) = command(name) {
+    handler(this)?.let { reply(it) }
 }

@@ -4,7 +4,6 @@ import com.github.kittinunf.fuel.httpGet
 import com.github.kittinunf.fuel.jackson.responseObject
 import com.google.gson.Gson
 import java.io.File
-import java.lang.System.getenv
 import javax.servlet.http.HttpServletRequest
 
 data class CaptchaResponse(val success: bool)
@@ -32,7 +31,10 @@ data class Secrets(
     val githubRepo: str,
     val recaptchaSecret: str,
     val telegramBotToken: str,
-    val telegramChatID: int
+    val telegramChatID: int,
+    val telegramBlockedChatID: int,
+    val harmClassifierUrl: str?,
+    val harmClassifierToken: str?
 )
 
 fun getSecrets(): Secrets

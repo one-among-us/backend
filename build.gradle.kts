@@ -42,6 +42,7 @@ dependencies {
 	// https://mvnrepository.com/artifact/com.github.kittinunf.fuel/fuel
 	implementation("com.github.kittinunf.fuel:fuel:_")
 	implementation("com.github.kittinunf.fuel:fuel-jackson:_")
+	implementation("com.github.kittinunf.fuel:fuel-coroutines:_")
 
 	// Kotlin Telegram Bot
 	implementation("io.github.kotlin-telegram-bot.kotlin-telegram-bot:telegram:_")

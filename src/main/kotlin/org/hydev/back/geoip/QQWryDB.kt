@@ -36,7 +36,7 @@ class QQWryDB(
         if (shouldUpdate())
         {
             // Download database file
-            dbFile.downloadFromUrl("https://99wry.cf/qqwry.dat")
+            dbFile.downloadFromUrl("https://cdn.jsdelivr.net/gh/sspanel-uim/qqwry.dat/qqwry.dat")
             dbTime.writeText(System.currentTimeMillis().toString())
         }
 

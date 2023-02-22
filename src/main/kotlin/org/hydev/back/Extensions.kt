@@ -93,3 +93,7 @@ typealias CmdHandler = CommandHandlerEnvironment.() -> String?
 fun Dispatcher.cmd(name: String, handler: CmdHandler) = command(name) {
     handler(this)?.let { reply(it) }
 }
+
+val dateFormat = SimpleDateFormat("yyyy-MM-dd")
+fun Date.yyyymmdd() = dateFormat.format(this)
+fun today() = Calendar.getInstance().time

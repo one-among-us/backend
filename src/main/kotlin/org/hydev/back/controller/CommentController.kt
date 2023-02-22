@@ -15,6 +15,7 @@ import org.hydev.back.db.Ban
 import org.hydev.back.db.BanRepo
 import org.hydev.back.db.PendingComment
 import org.hydev.back.db.PendingCommentRepo
+import org.hydev.back.geoip.AcceptLanguage
 import org.hydev.back.geoip.GeoIP
 import org.springframework.web.bind.annotation.CrossOrigin
 import org.springframework.web.bind.annotation.PostMapping
@@ -129,6 +130,8 @@ class CommentController(
 > Name: $name
 > Email: $email
 > Content: $content
+> Accept-Langauge: ${request.getHeader("accept-language")}
+> User-Agent: ${request.getHeader("user-agent")}
 << EOF >>""")
 
         // Verify captcha
@@ -182,6 +185,9 @@ $content
             if (clas == HarmLevel.HARMFUL) secrets.telegramBlockedChatID
             else secrets.telegramChatID
         }
+
+        request.getHeader("accept-language")?.let { notif += "\n- 请求语言: ${AcceptLanguage.parse(it)}" }
+        request.getHeader("user-agent")?.let { notif += "\n- 浏览器: $it" }
 
         // Send message on telegram
         bot.sendMessage(ChatId.fromId(chatId), notif, replyMarkup = replyMarkup)

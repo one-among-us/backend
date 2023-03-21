@@ -7,6 +7,7 @@ import org.hydev.back.str
 import org.springframework.data.jpa.repository.JpaRepository
 import org.springframework.stereotype.Repository
 import java.sql.Date
+import javax.persistence.Column
 import javax.persistence.Entity
 import javax.persistence.GeneratedValue
 import javax.persistence.Id
@@ -16,7 +17,10 @@ data class PendingComment(
     @Id @GeneratedValue
     var id: int = 0,
     var personId: str = "",
+
+    @Column(length = 10000)
     var content: str = "",
+
     var submitter: str = "",
     var email: str = "",
     var date: Date = Date(0),

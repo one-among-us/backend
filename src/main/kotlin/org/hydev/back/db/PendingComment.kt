@@ -19,7 +19,6 @@ data class PendingComment(
     var id: int = 0,
     var personId: str = "",
 
-    @Column(length = 10000)
     @Type(type = "text")
     var content: str = "",
 

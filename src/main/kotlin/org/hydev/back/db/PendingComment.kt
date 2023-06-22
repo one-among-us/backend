@@ -1,5 +1,6 @@
 package org.hydev.back.db
 
+import org.hibernate.annotations.Type
 import org.hibernate.Hibernate
 import org.hydev.back.bool
 import org.hydev.back.int
@@ -18,7 +19,7 @@ data class PendingComment(
     var id: int = 0,
     var personId: str = "",
 
-    @Column(length = 10000)
+    @Type(type = "text")
     var content: str = "",
 
     var submitter: str = "",

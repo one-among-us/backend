@@ -91,7 +91,7 @@ class CommentController(
 
         // Spoiler
         if (callbackQuery.data == "comment-pass-spoiler")
-            comment.content = "||${comment.content.replace('\n', ' ')}||"
+            comment.content = "||${comment.content}||"
 
         // Create commit content
         val fPath = "people/${comment.personId}/comments/${date("yyyy-MM-dd")}-C${comment.id}.json"

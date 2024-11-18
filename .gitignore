@@ -29,3 +29,4 @@ secrets.json
 test.sqlite
 data/mysql
 data/geoip
+bin/

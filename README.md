@@ -5,7 +5,7 @@
 2. In `data/secrets`, copy `sample-secrets.json` to `secrets.json`
 3. Edit `secrets.json`
 4. In `docker-compose.yml`, change `build: .` to `image: ghcr.io/one-among-us/backend:main` if you don't want to build locally.
-4. `docker-compose up -d`
+5. `docker-compose up -d`
 
 ### Update Existing Deploy
 

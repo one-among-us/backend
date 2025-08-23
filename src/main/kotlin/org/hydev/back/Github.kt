@@ -32,3 +32,7 @@ fun commitDirectly(editor: str, edit: DataEdit, message: str? = null): str
 
     return commit.commit!!.htmlUrl.toString()
 }
+
+fun main() {
+    commitDirectly("test", DataEdit("people/tdor/comments/${date("yyyy-MM-dd")}-C17001.json", "{}"), "[+] Comment added by test for test")
+}

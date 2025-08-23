@@ -8,6 +8,7 @@ import com.github.kotlintelegrambot.dispatcher.callbackQuery
 import com.github.kotlintelegrambot.entities.ChatId
 import com.github.kotlintelegrambot.logging.LogLevel
 import kotlinx.coroutines.*
+import org.hibernate.SessionFactory
 import org.hydev.back.controller.CommentController
 import org.hydev.back.db.Ban
 import org.hydev.back.db.BanRepo
@@ -16,6 +17,7 @@ import org.springframework.boot.autoconfigure.SpringBootApplication
 import org.springframework.boot.runApplication
 import org.springframework.stereotype.Component
 import javax.annotation.PostConstruct
+import javax.persistence.EntityManager
 
 val secrets = getSecrets()
 lateinit var bot: Bot
@@ -40,7 +42,9 @@ class Application
 class PostConstruct(
 	private val commentController: CommentController,
 	private val banRepo: BanRepo,
-	private val geoIP: GeoIP
+	private val geoIP: GeoIP,
+    private val em: EntityManager,
+    private val sf: SessionFactory
 ) {
 	@OptIn(DelicateCoroutinesApi::class)
 	@PostConstruct

@@ -1,5 +1,9 @@
 package org.hydev.back
 
+import arrow.core.Either
+import arrow.core.left
+import arrow.core.raise.either
+import arrow.core.right
 import com.github.kittinunf.fuel.Fuel
 import com.github.kotlintelegrambot.dispatcher.Dispatcher
 import com.github.kotlintelegrambot.dispatcher.command
@@ -13,12 +17,15 @@ import org.springframework.web.bind.annotation.RequestBody
 import org.springframework.web.bind.annotation.RequestHeader
 import org.springframework.web.bind.annotation.RequestParam
 import java.io.File
+import java.io.FileDescriptor.out
 import java.io.FileOutputStream
+import java.io.PrintStream
 import java.text.SimpleDateFormat
 import java.util.*
 import kotlin.coroutines.resume
 import kotlin.coroutines.resumeWithException
 import kotlin.coroutines.suspendCoroutine
+import kotlin.random.Random
 
 typealias P = RequestParam
 typealias B = RequestBody
@@ -97,3 +104,48 @@ fun Dispatcher.cmd(name: String, handler: CmdHandler) = command(name) {
 val dateFormat = SimpleDateFormat("yyyy-MM-dd")
 fun Date.yyyymmdd() = dateFormat.format(this)
 fun today() = Calendar.getInstance().time
+
+
+
+infix fun <T> T.cons(other: T) = listOf(this, other)
+infix fun <T, R> List<T>.fmap(f: (T) -> R) = this.map(f)
+infix fun <T> List<T>.ffilter(f: (T) -> Boolean) = this.filter(f)
+infix fun String.transform(t: String) = "$this -> $t"
+infix fun String.check(l: Int) = this.length > l
+infix fun PrintStream.println(s: Any) = println(s)
+
+infix fun <T, R> T?.or(other: R?) = this?.left() ?: other?.right()
+
+class Promise<T, E>(f: (((T) -> Unit), ((E) -> Unit)) -> Unit)
+{
+    var exc: Throwable? = null
+    var result: T? = null
+    var error: E? = null
+
+    init {
+        try {
+            f({ result = it }, { error = it })
+        } catch (e: Throwable) {
+            exc = e
+        }
+    }
+
+    fun then(f: (T) -> Unit) = also { result?.let(f) }
+    fun catch(f: (Either<Throwable, E>) -> Unit) = also { (exc or error)?.let(f) }
+    fun finally(f: () -> Unit) = also { f() }
+}
+
+
+fun main(args: Array<String>) {
+    Promise { resolve, reject ->
+        if (Random.nextBoolean()) resolve("Success")
+        else reject("Failed")
+    }.then {
+        println(it)
+    }.catch {
+        println(it)
+    }.finally {
+        println("Done")
+    }
+}
+

@@ -18,9 +18,12 @@ import javax.servlet.http.HttpServletRequest
 class EditController
 {
     @PostMapping("/info")
-    fun get(@P id: str, @P content: str, @P captcha: str, @P name: str, @P email: str,
+    fun get(@P id: str, @P content: str?, @P captcha: str, @P name: str, @P email: str,
             request: HttpServletRequest): Any
     {
+        val text = content ?: request.reader.readText()
+        if (text.isBlank()) return "没有收到内容".http(400)
+
         val ip = request.getIP()
         println("""
 [+] Info edit received. 
@@ -28,7 +31,7 @@ class EditController
 > ID: $id
 > Name: $name
 > Email: $email
-> Content: $content
+> Content: $text
 << EOF >>""")
 
         // Verify captcha
@@ -44,7 +47,7 @@ class EditController
             "anonymous@example.com" else email
 
         // Convert json to yml
-        val obj = ObjectMapper().readTree(content)
+        val obj = ObjectMapper().readTree(text)
         val yml = ObjectMapper(YAMLFactory()).writeValueAsString(obj)
 
         val notif = """

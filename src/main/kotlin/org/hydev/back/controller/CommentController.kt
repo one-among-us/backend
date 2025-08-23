@@ -118,10 +118,14 @@ class CommentController(
 
     @PostMapping("/add")
     suspend fun addComment(
-        @P id: str, @P content: str, @P captcha: str, @P name: str, @P email: str,
+        @P id: str, @P content: str?, @P captcha: str, @P name: str, @P email: str,
         request: HttpServletRequest
     ): Any
     {
+        // If there are no content, check if content is in the body
+        val text = content ?: request.reader.readText()
+        if (text.isBlank()) return "没有收到内容".http(400)
+
         val ip = request.getIP()
         println("""
 [+] Comment received. 
@@ -129,7 +133,7 @@ class CommentController(
 > ID: $id
 > Name: $name
 > Email: $email
-> Content: $content
+> Content: $text
 > Accept-Langauge: ${request.getHeader("accept-language")}
 > User-Agent: ${request.getHeader("user-agent")}
 << EOF >>""")
@@ -150,7 +154,7 @@ class CommentController(
         val comment = withContext(Dispatchers.IO) {
             commentRepo.save(PendingComment(
                 personId = id,
-                content = content,
+                content = text,
                 submitter = name,
                 email = email,
                 date = Date(java.util.Date().time),
@@ -161,7 +165,7 @@ class CommentController(
         var notif = """
 #${comment.id} - $id 收到了新的留言：
 
-$content
+$text
 
 - IP: $ip"""
 
@@ -179,7 +183,7 @@ $content
         }
         else {
             // Check if AI think it's inappropriate
-            val clas = harmClassifier.classify(content)
+            val clas = harmClassifier.classify(text)
             clas?.msg?.let { notif += "\n- $it" }
 
             if (clas == HarmLevel.HARMFUL) secrets.telegramBlockedChatID

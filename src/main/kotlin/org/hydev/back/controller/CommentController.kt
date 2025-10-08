@@ -35,6 +35,28 @@ class CommentController(
     private val harmClassifier: IHarmClassifier
 ) {
 
+    /**
+     * Add or update note for a pending comment
+     * @param commentId Comment ID
+     * @param noteContent Note content (use "clear" to clear the note)
+     * @return Success message or error message
+     */
+    fun addNote(commentId: Long, noteContent: String): String {
+        val comment = commentRepo.queryById(commentId)
+            ?: return "找不到评论 #$commentId"
+
+        if (noteContent.lowercase() == "clear") {
+            comment.note = null
+            commentRepo.save(comment)
+            return "✅ 已清空评论 #$commentId 的备注"
+        }
+
+        comment.note = noteContent
+        commentRepo.save(comment)
+
+        return "✅ 已为评论 #$commentId 添加备注：\n$noteContent"
+    }
+
     val replyMarkup = InlineKeyboardMarkup.createSingleRowKeyboard(
         InlineKeyboardButton.CallbackData(
             text = "通过",
@@ -96,8 +118,17 @@ class CommentController(
         // Create commit content
         val fPath = "people/${comment.personId}/comments/${date("yyyy-MM-dd")}-C${comment.id}.json"
         val cMsg = "[+] Comment added by ${comment.submitter} for ${comment.personId}"
-        val content = json("id" to comment.id, "content" to comment.content,
-            "submitter" to comment.submitter, "date" to comment.date)
+
+        // Build JSON content with optional replies
+        val content = buildList {
+            add("id" to comment.id)
+            add("content" to comment.content)
+            add("submitter" to comment.submitter)
+            add("date" to comment.date)
+            if (comment.note != null) {
+                add("replies" to listOf(mapOf("content" to comment.note, "submitter" to "Maintainer")))
+            }
+        }.let { json(*it.toTypedArray()) }
         println("[+] Comment approved. Adding Comment $id: $content")
 
         // Write commit

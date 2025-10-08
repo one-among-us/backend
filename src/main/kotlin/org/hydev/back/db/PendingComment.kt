@@ -26,7 +26,10 @@ data class PendingComment(
     var email: str = "",
     var date: Date = Date(0),
     var approved: bool = false,
-    var ip: str = ""
+    var ip: str = "",
+
+    @Type(type = "text")
+    var note: str? = null
 )
 {
     override fun equals(other: Any?): Boolean

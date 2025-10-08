@@ -23,6 +23,7 @@ import javax.annotation.PostConstruct
 
 val secrets = getSecrets()
 lateinit var bot: Bot
+private val COMMENT_ID_REGEX = Regex("^#(\\d+)\\b")
 
 /**
  * Command that can only be used in the telegram chats specified in the secrets
@@ -59,7 +60,8 @@ class PostConstruct(
 				secureCmd("help") { """
 					/ban <ip> [reason]
 					/unban <ip>
-					/listban""".trimIndent()
+					/listban
+					/note <note>""".trimIndent()
 				}
 				secureCmd("ban") {
 					val args = (message.text ?: "").split(" ").slice(1)
@@ -79,6 +81,27 @@ class PostConstruct(
 				}
 				secureCmd("listban") {
 					"Banned IPs:\n" + banRepo.findAll().joinToString("\n") { it.ip }
+				}
+				secureCmd("note") {
+					val replyTo = message.replyToMessage
+					if (replyTo == null) {
+						return@secureCmd "Please reply to a pending comment to use this command"
+					}
+
+					val text = replyTo.text ?: return@secureCmd "Cannot read original message content"
+					val idMatch = COMMENT_ID_REGEX.find(text)
+					if (idMatch == null) {
+						return@secureCmd "Cannot extract comment ID from message"
+					}
+
+					val commentId = idMatch.groupValues[1].toLong()
+
+					val noteContent = (message.text ?: "").substringAfter("/note").trim()
+					if (noteContent.isEmpty()) {
+						return@secureCmd "Usage: /note <note> or /note clear"
+					}
+
+					commentController.addNote(commentId, noteContent)
 				}
 				callbackQuery("comment-pass", commentController.commentCallback)
 				callbackQuery("comment-reject", commentController.commentCallback)

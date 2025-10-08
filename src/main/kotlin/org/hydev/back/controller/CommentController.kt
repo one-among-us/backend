@@ -46,14 +46,11 @@ class CommentController(
             ?: return "找不到评论 #$commentId"
 
         if (noteContent.lowercase() == "clear") {
-            comment.note = null
-            commentRepo.save(comment)
+            commentRepo.save(comment.apply { note = null })
             return "✅ 已清空评论 #$commentId 的备注"
         }
 
-        comment.note = noteContent
-        commentRepo.save(comment)
-
+        commentRepo.save(comment.apply { note = noteContent })
         return "✅ 已为评论 #$commentId 添加备注：\n$noteContent"
     }
 
@@ -120,15 +117,9 @@ class CommentController(
         val cMsg = "[+] Comment added by ${comment.submitter} for ${comment.personId}"
 
         // Build JSON content with optional replies
-        val content = buildList {
-            add("id" to comment.id)
-            add("content" to comment.content)
-            add("submitter" to comment.submitter)
-            add("date" to comment.date)
-            if (comment.note != null) {
-                add("replies" to listOf(mapOf("content" to comment.note, "submitter" to "Maintainer")))
-            }
-        }.let { json(*it.toTypedArray()) }
+        val content = json("id" to comment.id, "content" to comment.content,
+            "submitter" to comment.submitter, "date" to comment.date,
+            *comment.note?.let { arrayOf("replies" to listOf(mapOf("content" to it, "submitter" to "Maintainer"))) } ?: arrayOf())
         println("[+] Comment approved. Adding Comment $id: $content")
 
         // Write commit

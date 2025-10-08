@@ -1,6 +1,5 @@
 package org.hydev.back
 
-import com.github.kittinunf.fuel.httpGet
 import com.github.kotlintelegrambot.Bot
 import com.github.kotlintelegrambot.bot
 import com.github.kotlintelegrambot.dispatch
@@ -8,7 +7,9 @@ import com.github.kotlintelegrambot.dispatcher.Dispatcher
 import com.github.kotlintelegrambot.dispatcher.callbackQuery
 import com.github.kotlintelegrambot.entities.ChatId
 import com.github.kotlintelegrambot.logging.LogLevel
-import kotlinx.coroutines.*
+import kotlinx.coroutines.DelicateCoroutinesApi
+import kotlinx.coroutines.GlobalScope
+import kotlinx.coroutines.launch
 import org.hydev.back.ai.getMorningMsg
 import org.hydev.back.controller.CommentController
 import org.hydev.back.db.Ban
@@ -17,8 +18,6 @@ import org.hydev.back.geoip.GeoIP
 import org.springframework.boot.autoconfigure.SpringBootApplication
 import org.springframework.boot.runApplication
 import org.springframework.stereotype.Component
-import java.time.ZoneId
-import java.time.ZonedDateTime
 import javax.annotation.PostConstruct
 
 val secrets = getSecrets()
@@ -83,23 +82,16 @@ class PostConstruct(
 					"Banned IPs:\n" + banRepo.findAll().joinToString("\n") { it.ip }
 				}
 				secureCmd("note") {
-					val replyTo = message.replyToMessage
-					if (replyTo == null) {
-						return@secureCmd "Please reply to a pending comment to use this command"
-					}
+					val replyTo = message.replyToMessage ?: return@secureCmd "Please reply to a pending comment to use this command"
 
+					
 					val text = replyTo.text ?: return@secureCmd "Cannot read original message content"
-					val idMatch = COMMENT_ID_REGEX.find(text)
-					if (idMatch == null) {
-						return@secureCmd "Cannot extract comment ID from message"
-					}
+					val idMatch = COMMENT_ID_REGEX.find(text) ?: return@secureCmd "Cannot extract comment ID from message"
 
 					val commentId = idMatch.groupValues[1].toLong()
 
 					val noteContent = (message.text ?: "").substringAfter("/note").trim()
-					if (noteContent.isEmpty()) {
-						return@secureCmd "Usage: /note <note> or /note clear"
-					}
+						.ifBlank { null } ?: return@secureCmd "Usage: /note <note> or /note clear"
 
 					commentController.addNote(commentId, noteContent)
 				}

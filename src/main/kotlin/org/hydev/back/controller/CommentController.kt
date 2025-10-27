@@ -75,6 +75,10 @@ class CommentController(
         val id = message.split(" ")[0].substring(1).toLong()
         val data = callbackQuery.data
 
+        val operator = callbackQuery.from.let { user ->
+            user.username?.let { "@$it" } ?: user.firstName
+        }
+
         if (data == "comment-cancel") {
             bot.editMessageReplyMarkup(chatId, msgId, inlId, replyMarkup)
             return@callback
@@ -90,13 +94,13 @@ class CommentController(
                     val ip = commentRepo.queryById(id)!!.ip
                     val entry = Ban(ip = ip, reason = "Bad comment #$id")
                     banRepo.save(entry)
-                    bot.editMessageText(chatId, msgId, inlId, "$id - 已封禁 $ip")
+                    bot.editMessageText(chatId, msgId, inlId, "$id - 已封禁 $ip by $operator")
                 }
 
                 // Rejected, remove
                 "reject" -> {
-                    println("[-] Comment rejected! Comment $id deleted.")
-                    bot.editMessageText(chatId, msgId, inlId, "$message\n- 已删除❌")
+                    println("[-] Comment rejected! Comment $id deleted by $operator")
+                    bot.editMessageText(chatId, msgId, inlId, "$message\n- 已删除❌ by $operator")
                 }
 
                 // Commit changes
@@ -119,7 +123,7 @@ class CommentController(
                     val content = json("id" to comment.id, "content" to comment.content,
                         "submitter" to comment.submitter, "date" to comment.date,
                         *comment.note?.let { arrayOf("replies" to listOf(mapOf("content" to it, "submitter" to "Maintainer"))) } ?: arrayOf())
-                    println("[+] Comment approved. Adding Comment $id: $content")
+                    println("[+] Comment approved. Adding Comment $id: $content by $operator")
 
                     // Write commit
                     val url = commitDirectly(comment.submitter, DataEdit(fPath, content), cMsg)
@@ -130,7 +134,7 @@ class CommentController(
                     commentRepo.save(comment)
 
                     // Attach URL
-                    bot.editMessageText(chatId, msgId, inlId, "$message\n- 已通过审核✅", replyMarkup =
+                    bot.editMessageText(chatId, msgId, inlId, "$message\n- 已通过审核✅ by $operator", replyMarkup =
                         InlineKeyboardMarkup.createSingleRowKeyboard(
                             InlineKeyboardButton.Url(text = "查看 Commit", url = url)
                         )

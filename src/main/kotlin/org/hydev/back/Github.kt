@@ -13,7 +13,6 @@ data class DataEdit(
  * Commit directly to the repository
  *
  * @param editor String
- * @param editorEmail String
  * @param edit One edit
  * @param message Commit message
  * @return Commit URL

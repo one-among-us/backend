@@ -37,7 +37,7 @@ fun date(f: str = "yyyy-MM-dd"): str = SimpleDateFormat(f).format(Date())
 fun <K, V> json(vararg pairs: Pair<K, V>): str = gson.toJson(mapOf(*pairs))
 
 // https://www.baeldung.com/java-email-validation-regex
-val emailRegex = "^(?=.{1,64}@)[\\p{L}0-9_-]+(\\.[\\p{L}0-9_-]+)*@[^-][\\p{L}0-9-]+(\\.[\\p{L}0-9-]+)*(\\.[\\p{L}]{2,})$".toRegex()
+val emailRegex = "^(?=.{1,64}@)[\\p{L}0-9_+-]+(\\.[\\p{L}0-9_+-]+)*@[^-][\\p{L}0-9-]+(\\.[\\p{L}0-9-]+)*(\\.[\\p{L}]{2,})$".toRegex()
 
 /**
  * Check if the string is a valid email

@@ -62,9 +62,9 @@ class CommentController(
     )
 
     val replyMarkup = InlineKeyboardMarkup.createSingleRowKeyboard(
-        *actionButtons.map { (text, action) ->
+        actionButtons.map { (text, action) ->
             InlineKeyboardButton.CallbackData(text = text, callbackData = "comment-$action")
-        }.toTypedArray()
+        }
     )
 
     val commentCallback: HandleCallbackQuery = callback@ {

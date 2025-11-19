@@ -95,9 +95,7 @@ class PostConstruct(
 
 					commentController.addNote(commentId, noteContent)
 				}
-				callbackQuery("comment-pass", commentController.commentCallback)
-				callbackQuery("comment-reject", commentController.commentCallback)
-				callbackQuery("comment-ban", commentController.commentCallback)
+				callbackQuery("comment-", commentController.commentCallback)
 			}
 		}
 		bot.sendMessage(ChatId.fromId(secrets.telegramChatID), getMorningMsg() + "\n\n（服务器已起床）")

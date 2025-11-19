@@ -54,88 +54,106 @@ class CommentController(
         return "✅ 已为评论 #$commentId 添加备注：\n$noteContent"
     }
 
+    private val actionButtons = mapOf(
+        "通过" to "pass",
+        "Spoiler 后通过" to "pass-spoiler",
+        "忽略" to "reject",
+        "封禁 IP" to "ban"
+    )
+
     val replyMarkup = InlineKeyboardMarkup.createSingleRowKeyboard(
-        InlineKeyboardButton.CallbackData(
-            text = "通过",
-            callbackData = "comment-pass"
-        ),
-        InlineKeyboardButton.CallbackData(
-            text = "Spoiler 后通过",
-            callbackData = "comment-pass-spoiler"
-        ),
-        InlineKeyboardButton.CallbackData(
-            text = "忽略",
-            callbackData = "comment-reject"
-        ),
-        InlineKeyboardButton.CallbackData(
-            text = "封禁 IP",
-            callbackData = "comment-ban"
-        )
+        actionButtons.map { (text, action) ->
+            InlineKeyboardButton.CallbackData(text = text, callbackData = "comment-$action")
+        }
     )
 
     val commentCallback: HandleCallbackQuery = callback@ {
-        val pass = callbackQuery.data.startsWith("comment-pass")
         val chatId = ChatId.fromId(callbackQuery.message!!.chat.id)
         val msgId = callbackQuery.message!!.messageId
         val inlId = callbackQuery.inlineMessageId
         val message = callbackQuery.message!!.text!!
         val id = message.split(" ")[0].substring(1).toLong()
+        val data = callbackQuery.data
 
-        bot.editMessageReplyMarkup(chatId, msgId, inlId, null)
+        val operator = callbackQuery.from.let { user ->
+            user.username?.let { "@$it" } ?: user.firstName
+        }
 
-        // Ban ip
-        if (callbackQuery.data == "comment-ban")
-        {
-            val ip = commentRepo.queryById(id)!!.ip
-            val entry = Ban(ip = ip, reason = "Bad comment #$id")
-            banRepo.save(entry)
-            bot.editMessageText(chatId, msgId, inlId, "$id - 已封禁 $ip")
+        if (data == "comment-cancel") {
+            bot.editMessageReplyMarkup(chatId, msgId, inlId, replyMarkup)
             return@callback
         }
 
-        // Rejected, remove
-        if (!pass)
-        {
-            println("[-] Comment rejected! Comment $id deleted.")
-            bot.editMessageText(chatId, msgId, inlId, "$message\n- 已删除❌")
+        if (data.startsWith("comment-confirm-")) {
+            val action = data.removePrefix("comment-confirm-")
+            bot.editMessageReplyMarkup(chatId, msgId, inlId, null)
+
+            when (action) {
+                // Ban ip
+                "ban" -> {
+                    val ip = commentRepo.queryById(id)!!.ip
+                    val entry = Ban(ip = ip, reason = "Bad comment #$id")
+                    banRepo.save(entry)
+                    bot.editMessageText(chatId, msgId, inlId, "$id - 已封禁 $ip by $operator")
+                }
+
+                // Rejected, remove
+                "reject" -> {
+                    println("[-] Comment rejected! Comment $id deleted by $operator")
+                    bot.editMessageText(chatId, msgId, inlId, "$message\n- 已删除❌ by $operator")
+                }
+
+                // Commit changes
+                "pass", "pass-spoiler" -> {
+                    var statusMsgId = 0L
+                    bot.sendMessage(chatId, "正在提交更改...").fold(
+                        { statusMsgId = it.messageId },
+                        { System.err.println("> Failed to send submission message: $it") })
+                    val comment = commentRepo.queryById(id)!!
+
+                    // Spoiler
+                    if (action == "pass-spoiler")
+                        comment.content = "||${comment.content.replace('\n', ' ')}||"
+
+                    // Create commit content
+                    val fPath = "people/${comment.personId}/comments/${date("yyyy-MM-dd")}-C${comment.id}.json"
+                    val cMsg = "[+] Comment added by ${comment.submitter} for ${comment.personId}"
+
+                    // Build JSON content with optional replies
+                    val content = json("id" to comment.id, "content" to comment.content,
+                        "submitter" to comment.submitter, "date" to comment.date,
+                        *comment.note?.let { arrayOf("replies" to listOf(mapOf("content" to it, "submitter" to "Maintainer"))) } ?: arrayOf())
+                    println("[+] Comment approved. Adding Comment $id: $content by $operator")
+
+                    // Write commit
+                    val url = commitDirectly(comment.submitter, DataEdit(fPath, content), cMsg)
+                    bot.deleteMessage(chatId, statusMsgId)
+
+                    // Update database
+                    comment.approved = true
+                    commentRepo.save(comment)
+
+                    // Attach URL
+                    bot.editMessageText(chatId, msgId, inlId, "$message\n- 已通过审核✅ by $operator", replyMarkup =
+                        InlineKeyboardMarkup.createSingleRowKeyboard(
+                            InlineKeyboardButton.Url(text = "查看 Commit", url = url)
+                        )
+                    )
+                }
+            }
             return@callback
         }
 
-        // Commit changes
-        var statusMsgId = 0L
-        bot.sendMessage(chatId, "正在提交更改...").fold(
-            { statusMsgId = it.messageId },
-            { System.err.println("> Failed to send submission message: $it") })
-        val comment = commentRepo.queryById(id)!!
-
-        // Spoiler
-        if (callbackQuery.data == "comment-pass-spoiler")
-            comment.content = "||${comment.content.replace('\n', ' ')}||"
-
-        // Create commit content
-        val fPath = "people/${comment.personId}/comments/${date("yyyy-MM-dd")}-C${comment.id}.json"
-        val cMsg = "[+] Comment added by ${comment.submitter} for ${comment.personId}"
-
-        // Build JSON content with optional replies
-        val content = json("id" to comment.id, "content" to comment.content,
-            "submitter" to comment.submitter, "date" to comment.date,
-            *comment.note?.let { arrayOf("replies" to listOf(mapOf("content" to it, "submitter" to "Maintainer"))) } ?: arrayOf())
-        println("[+] Comment approved. Adding Comment $id: $content")
-
-        // Write commit
-        val url = commitDirectly(comment.submitter, DataEdit(fPath, content), cMsg)
-        bot.deleteMessage(chatId, statusMsgId)
-
-        // Update database
-        comment.approved = true
-        commentRepo.save(comment)
-
-        // Attach URL
-        bot.editMessageText(chatId, msgId, inlId, "$message\n- 已通过审核✅", replyMarkup =
+        val action = data.removePrefix("comment-")
+        val confirmText = actionButtons.entries.find { it.value == action }?.key?.let { "✅ 确认$it" }
+        val confirmMarkup = confirmText?.let {
             InlineKeyboardMarkup.createSingleRowKeyboard(
-                InlineKeyboardButton.Url(text = "查看 Commit", url = url)
+                InlineKeyboardButton.CallbackData(text = it, callbackData = "comment-confirm-$action"),
+                InlineKeyboardButton.CallbackData(text = "❌ 取消", callbackData = "comment-cancel")
             )
-        )
+        } ?: replyMarkup
+
+        bot.editMessageReplyMarkup(chatId, msgId, inlId, confirmMarkup)
     }
 
     @PostMapping("/add")

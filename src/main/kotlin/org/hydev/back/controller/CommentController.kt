@@ -5,6 +5,7 @@ package org.hydev.back.controller
 import com.github.kotlintelegrambot.dispatcher.handlers.HandleCallbackQuery
 import com.github.kotlintelegrambot.entities.ChatId
 import com.github.kotlintelegrambot.entities.InlineKeyboardMarkup
+import com.github.kotlintelegrambot.entities.ParseMode
 import com.github.kotlintelegrambot.entities.keyboard.InlineKeyboardButton
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
@@ -21,6 +22,7 @@ import org.springframework.web.bind.annotation.CrossOrigin
 import org.springframework.web.bind.annotation.PostMapping
 import org.springframework.web.bind.annotation.RequestMapping
 import org.springframework.web.bind.annotation.RestController
+import org.springframework.web.util.HtmlUtils
 import java.sql.Date
 import javax.servlet.http.HttpServletRequest
 
@@ -91,10 +93,23 @@ class CommentController(
             when (action) {
                 // Ban ip
                 "ban" -> {
-                    val ip = commentRepo.queryById(id)!!.ip
+                    val comment = commentRepo.queryById(id)!!
+                    val ip = comment.ip
                     val entry = Ban(ip = ip, reason = "Bad comment #$id")
                     banRepo.save(entry)
-                    bot.editMessageText(chatId, msgId, inlId, "$id - 已封禁 $ip by $operator")
+
+                    val escapedPersonId = HtmlUtils.htmlEscape(comment.personId)
+                    val escapedContent = HtmlUtils.htmlEscape(comment.content)
+                    val banMessage = """
+                        #$id - $escapedPersonId 收到了新的留言：
+                        
+                        <blockquote expandable><tg-spoiler>$escapedContent</tg-spoiler></blockquote>
+                        
+                        - 已封禁🚫 $ip by $operator
+                    """.trimIndent()
+
+                    println("[-] Comment banned! IP $ip banned by $operator due to Comment $id")
+                    bot.editMessageText(chatId, msgId, inlId, banMessage, parseMode = ParseMode.HTML)
                 }
 
                 // Rejected, remove

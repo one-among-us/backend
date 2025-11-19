@@ -185,7 +185,7 @@ class CommentController(
 > Name: $name
 > Email: $email
 > Content: $content
-> Accept-Langauge: ${request.getHeader("accept-language")}
+> Accept-Language: ${request.getHeader("accept-language")}
 > User-Agent: ${request.getHeader("user-agent")}
 << EOF >>""")
 

@@ -100,12 +100,14 @@ class CommentController(
 
                     val escapedPersonId = HtmlUtils.htmlEscape(comment.personId)
                     val escapedContent = HtmlUtils.htmlEscape(comment.content)
+                    val escapedIp = HtmlUtils.htmlEscape(ip)
+                    val escapedOperator = HtmlUtils.htmlEscape(operator)
                     val banMessage = """
                         #$id - $escapedPersonId 收到了新的留言：
                         
                         <blockquote expandable><tg-spoiler>$escapedContent</tg-spoiler></blockquote>
                         
-                        - 已封禁🚫 $ip by $operator
+                        - 已封禁🚫 $escapedIp by $escapedOperator
                     """.trimIndent()
 
                     println("[-] Comment banned! IP $ip banned by $operator due to Comment $id")

@@ -5,6 +5,7 @@ import com.github.kotlintelegrambot.bot
 import com.github.kotlintelegrambot.dispatch
 import com.github.kotlintelegrambot.dispatcher.Dispatcher
 import com.github.kotlintelegrambot.dispatcher.callbackQuery
+import com.github.kotlintelegrambot.entities.BotCommand
 import com.github.kotlintelegrambot.entities.ChatId
 import com.github.kotlintelegrambot.logging.LogLevel
 import kotlinx.coroutines.DelicateCoroutinesApi
@@ -23,6 +24,31 @@ import javax.annotation.PostConstruct
 val secrets = getSecrets()
 lateinit var bot: Bot
 private val COMMENT_ID_REGEX = Regex("^#(\\d+)\\b")
+
+private data class CommandSpec(
+	val name: String,
+	val menuDescription: String,
+	val usage: String,
+	val detail: String
+)
+
+private val COMMAND_SPECS = listOf(
+	CommandSpec("start", "Check if bot is alive", "/start", "检查机器人在线状态"),
+	CommandSpec("help", "Show admin commands", "/help", "显示完整命令帮助"),
+	CommandSpec("ban", "Ban an IP address", "/ban <ip> [reason]", "封禁 IP，可附带原因"),
+	CommandSpec("unban", "Unban an IP address", "/unban <ip>", "解除 IP 封禁"),
+	CommandSpec("listban", "List all banned IPs", "/listban", "列出当前所有封禁 IP"),
+	CommandSpec("note", "Add note to a pending comment", "/note <note>", "回复待审评论消息后添加备注（内容为 clear 可清空）")
+)
+
+private val TELEGRAM_COMMANDS = COMMAND_SPECS.map { BotCommand(it.name, it.menuDescription) }
+
+private val HELP_TEXT = buildString {
+	appendLine("可用命令：")
+	COMMAND_SPECS.forEach { spec ->
+		appendLine("${spec.usage} - ${spec.detail}")
+	}
+}
 
 /**
  * Command that can only be used in the telegram chats specified in the secrets
@@ -56,12 +82,7 @@ class PostConstruct(
 			token = secrets.telegramBotToken
 			dispatch {
 				cmd("start") { "🐈 Running!" }
-				secureCmd("help") { """
-					/ban <ip> [reason]
-					/unban <ip>
-					/listban
-					/note <note>""".trimIndent()
-				}
+				secureCmd("help") { HELP_TEXT }
 				secureCmd("ban") {
 					val args = (message.text ?: "").split(" ").slice(1)
 					if (args.isEmpty()) return@secureCmd "Usage: /ban <ip> [reason]"
@@ -99,6 +120,10 @@ class PostConstruct(
 			}
 		}
 		bot.sendMessage(ChatId.fromId(secrets.telegramChatID), getMorningMsg() + "\n\n（服务器已起床）")
+		bot.setMyCommands(TELEGRAM_COMMANDS).fold(
+			{ println("[Telegram] Command list synced (${TELEGRAM_COMMANDS.size} commands)") },
+			{ println("[Telegram] Failed to sync command list: $it") }
+		)
 		GlobalScope.launch {
 			println(geoIP.info("127.0.0.1"))
 		}
